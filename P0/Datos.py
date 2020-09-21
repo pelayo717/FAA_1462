@@ -17,10 +17,10 @@ class Datos:
         #============================= NOMINALATRIBUTOS =====================================#
 
         # ARRAY de dimension (columnas) de tipo booleano
-        nominalAtributos = np.empty([len(datosEntrada.columns)-1], dtype=bool)
+        nominalAtributos = np.empty([len(datosEntrada.columns)], dtype=bool)
         
         # Descartamos la ultima columna, que solo nos indica el valor de la clase
-        for i in range(len(datosEntrada.columns) - 1):
+        for i in range(len(datosEntrada.columns)):
             aux = datosEntrada.values[:1][0][i]
 
             # casteamos si es posible de string ==> float (incluimos reales y enteros)
@@ -36,10 +36,10 @@ class Datos:
         # ============================= DATOS ===============================#
 
         # ARRAY bidimensional de tipo string, usamos numero de filas y de columnas de la variable datosEntrada
-        datos = np.empty([len(datosEntrada),len(datosEntrada.columns)-1],dtype=object)
+        datos = np.empty([len(datosEntrada),len(datosEntrada.columns)],dtype=object)
         
         for i in range(len(datosEntrada)): #filas
-            for j in range(len(datosEntrada.columns)-1): #columnas
+            for j in range(len(datosEntrada.columns)): #columnas
                 datos[i][j]=str(datosEntrada.values[:][i][j])
 
 
