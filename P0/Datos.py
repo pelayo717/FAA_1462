@@ -15,7 +15,7 @@ class Datos:
 
         datosEntrada = pd.read_csv(nombreFichero)
         
-        #============================= NOMINALATRIBUTOS =====================================#
+        #============================= NOMINALATRIBUTOS ===================================== #
 
         # ARRAY de dimension (columnas) de tipo booleano
         nominalAtributos = np.empty([len(datosEntrada.columns)], dtype=bool)
@@ -34,7 +34,7 @@ class Datos:
         # Verificamos que se han guardado correctamente los booleanos de cada columna
         print(nominalAtributos)
 
-        # ============================= DATOS ===============================#
+        # ============================= DATOS =============================== #
 
         # ARRAY bidimensional de tipo string, usamos numero de filas y de columnas de la variable datosEntrada
         datos = np.empty([len(datosEntrada),len(datosEntrada.columns)],dtype=object)
@@ -48,7 +48,7 @@ class Datos:
         # Verificamos que se han guardado correctamente los objetos de cada fila
         print(datos)
 
-        # =========================== DICCIONARIO ============================#
+        # =========================== DICCIONARIO ============================ #
 
         diccionario={}
 
@@ -77,9 +77,10 @@ class Datos:
             else:
                 diccionario[datosEntrada.columns[h]] = {}
 
-
+        # Verificamos el contenido del diccionario
         print(diccionario)
 
+        # ============================ CONVERSION DE DATOS ===================== #
         
     # TODO: implementar en la practica 1
     def extraeDatos(self, idx):
