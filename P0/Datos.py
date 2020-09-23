@@ -55,9 +55,18 @@ class Datos:
         # revisamos si son valores nominales o enteros/reales
         for h in range(len(datosEntrada.columns)):
             if(nominalAtributos[h] == True):
+
+                # Ordenar los atributos alfa y meter en dicc
+
+                datosEntrada.values[:][h]
+
+                diccionario_ordenado = sorted(diccionario.items(), key=lambda x: x[0])
                 diccionario[datosEntrada.columns[h]] = {}
- 
-        diccionario_ordenado = sorted(diccionario.items(), key=lambda x: x[0])
+
+            else:
+                diccionario[datosEntrada.columns[h]] = {}
+
+        
         print(diccionario_ordenado)
     # TODO: implementar en la practica 1
     def extraeDatos(self, idx):
