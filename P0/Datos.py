@@ -29,24 +29,8 @@ class Datos:
                 float(aux)
                 nominalAtributos[i] = False
             except ValueError:
-                nominalAtributos[i] = True
-            
-        # Verificamos que se han guardado correctamente los booleanos de cada columna
-        print(nominalAtributos)
+                nominalAtributos[i] = True    
 
-        # ============================= DATOS =============================== #
-
-        # ARRAY bidimensional de tipo string, usamos numero de filas y de columnas de la variable datosEntrada
-        datos = np.empty([len(datosEntrada),len(datosEntrada.columns)],dtype=object)
-        
-
-        for i in range(len(datosEntrada)): #filas
-            for j in range(len(datosEntrada.columns)): #columnas
-                datos[i][j]=str(datosEntrada.values[i][j])
-
-
-        # Verificamos que se han guardado correctamente los objetos de cada fila
-        print(datos)
 
         # =========================== DICCIONARIO ============================ #
 
@@ -77,10 +61,28 @@ class Datos:
             else:
                 diccionario[datosEntrada.columns[h]] = {}
 
-        # Verificamos el contenido del diccionario
-        print(diccionario)
 
-        # ============================ CONVERSION DE DATOS ===================== #
+        # ============================= DATOS =============================== #
+
+        # ARRAY bidimensional de tipo string, usamos numero de filas y de columnas de la variable datosEntrada
+        datos = np.empty([len(datosEntrada),len(datosEntrada.columns)],dtype=object)
+        
+
+        for i in range(len(datosEntrada)): #filas
+            for j in range(len(datosEntrada.columns)): #columnas
+
+                # Comprobamos si el tipo de dato es nominal
+                if ( nominalAtributos[j] == True ):
+                    # Buscamos en el diccionario sus pares clave-valor
+                    valor = diccionario[datosEntrada.columns[j]]
+
+                    # Encontramos la conversion del atributo nominal a numerico
+                    entrada = valor[datosEntrada.values[i][j]]
+
+                #Si el dato ya es de tipo numerico, se introduce
+                else:
+                    entrada = datosEntrada.values[i][j]
+                datos[i][j] = entrada
         
     # TODO: implementar en la practica 1
     def extraeDatos(self, idx):
