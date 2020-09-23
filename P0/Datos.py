@@ -8,6 +8,7 @@ class Datos:
 
     nominalAtributos = None
     datos = None
+    diccionario = None
 
     # TODO: procesar el fichero para asignar correctamente las variables nominalAtributos, datos y diccionario
     def __init__(self, nombreFichero):
@@ -38,6 +39,7 @@ class Datos:
         # ARRAY bidimensional de tipo string, usamos numero de filas y de columnas de la variable datosEntrada
         datos = np.empty([len(datosEntrada),len(datosEntrada.columns)],dtype=object)
         
+
         for i in range(len(datosEntrada)): #filas
             for j in range(len(datosEntrada.columns)): #columnas
                 datos[i][j]=str(datosEntrada.values[:][i][j])
@@ -48,6 +50,15 @@ class Datos:
 
         # =========================== DICCIONARIO ============================#
 
+        diccionario={}
+
+        # revisamos si son valores nominales o enteros/reales
+        for h in range(len(datosEntrada.columns)):
+            if(nominalAtributos[h] == True):
+                diccionario[datosEntrada.columns[h]] = {}
+ 
+        diccionario_ordenado = sorted(diccionario.items(), key=lambda x: x[0])
+        print(diccionario_ordenado)
     # TODO: implementar en la practica 1
     def extraeDatos(self, idx):
         pass
