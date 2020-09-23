@@ -22,7 +22,7 @@ class Datos:
         
         # Descartamos la ultima columna, que solo nos indica el valor de la clase
         for i in range(len(datosEntrada.columns)):
-            aux = datosEntrada.values[:1][0][i]
+            aux = datosEntrada.values[0][i]
 
             # casteamos si es posible de string ==> float (incluimos reales y enteros)
             try:
@@ -42,7 +42,7 @@ class Datos:
 
         for i in range(len(datosEntrada)): #filas
             for j in range(len(datosEntrada.columns)): #columnas
-                datos[i][j]=str(datosEntrada.values[:][i][j])
+                datos[i][j]=str(datosEntrada.values[i][j])
 
 
         # Verificamos que se han guardado correctamente los objetos de cada fila
@@ -55,19 +55,32 @@ class Datos:
         # revisamos si son valores nominales o enteros/reales
         for h in range(len(datosEntrada.columns)):
             if(nominalAtributos[h] == True):
+                #Creamos la lista auxiliar, en la que aniadiremos los valores de una columna, sin repeticion
+                lista_aux =[]
+                for i in range(len(datosEntrada)):
+                    if datosEntrada.values[i][h] not in lista_aux:
+                        lista_aux.append(datosEntrada.values[i][h])
+          
+                #Lista con los elementos albergados y listo para ordenar
+                lista_aux.sort()
 
-                # Ordenar los atributos alfa y meter en dicc
+                #Creamos diccionario auxiliar, donde insertar las claves correctamente junto alos valores correspondientes
+                diccionario_aux = {}
+                for j in range (len(lista_aux)):
+                    diccionario_aux[lista_aux[j]] = j
 
-                datosEntrada.values[:][h]
+                diccionario[datosEntrada.columns[h]] = diccionario_aux
 
-                diccionario_ordenado = sorted(diccionario.items(), key=lambda x: x[0])
-                diccionario[datosEntrada.columns[h]] = {}
-
+                #Liberamos los contenidos de la lista y el diccionario auxiliar para la siguiente columna (atributo)
+                diccionario_aux=None
+                lista_aux=None
             else:
                 diccionario[datosEntrada.columns[h]] = {}
 
+
+        print(diccionario)
+
         
-        print(diccionario_ordenado)
     # TODO: implementar en la practica 1
     def extraeDatos(self, idx):
         pass
