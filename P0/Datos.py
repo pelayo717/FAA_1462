@@ -21,7 +21,7 @@ class Datos:
         atributos = list(datosEntrada.columns)
 
         cantidadAtributos = len(atributos) # Variable auxiliar que almacena el numero de atributos del dataset
-        
+        cantidadDatos = len(datosEntrada)  # Variable auxiliar que almacena el numero de datos por columna del dataset
         #============================= NOMINALATRIBUTOS ===================================== #
 
         # ARRAY de dimension (columnas) de tipo booleano
@@ -73,7 +73,7 @@ class Datos:
         # ============================= DATOS =============================== #
 
         # ARRAY bidimensional de tipo numerico, usamos numero de filas y de columnas de la variable datosEntrada
-        datos = np.empty([len(datosEntrada), 0],dtype=object)
+        datos = np.empty([cantidadDatos, 0],dtype=object)
         
         for i in range(cantidadAtributos): # Para cada uno de los atributos
             nombreAtributo = atributos[i]
