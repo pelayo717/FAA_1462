@@ -22,6 +22,7 @@ class Datos:
 
         cantidadAtributos = len(atributos) # Variable auxiliar que almacena el numero de atributos del dataset
         cantidadDatos = len(datosEntrada)  # Variable auxiliar que almacena el numero de datos por columna del dataset
+        
         #============================= NOMINALATRIBUTOS ===================================== #
 
         # ARRAY de dimension (columnas) de tipo booleano
