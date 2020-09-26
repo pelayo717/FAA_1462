@@ -8,16 +8,18 @@ class Datos:
 
     nominalAtributos = None     # Array de tipo booleano que indica si el tipo de atributo es nominal
     atributos = None            # Array de tipo string con los nombres de los atributos
-    datos = None                # Array bidimensional 'pandas' con los datos de los atributos
+    datos = None                # Array bidimensional 'numpy' con los datos de los atributos
     diccionario = None          # Diccionario con los pares clave-valor de las conversiones de atributos nominales
 
     # TODO: procesar el fichero para asignar correctamente las variables nominalAtributos, datos y diccionario
     def __init__(self, nombreFichero):
 
+        # Leemos del fichero csv los datos 
         datosEntrada = pd.read_csv(nombreFichero)
 
         #=============================== ATRIBUTOS ======================================= #
 
+        # Creamos una lista con los nombres de los atributos 
         self.atributos = list(datosEntrada.columns)
 
         cantidadAtributos = len(self.atributos) # Variable auxiliar que almacena el numero de atributos del dataset
@@ -25,10 +27,10 @@ class Datos:
         
         #============================= NOMINALATRIBUTOS ===================================== #
 
-        # ARRAY de dimension (columnas) de tipo booleano
+        # Array de una dimension (columnas) de tipo booleano
         self.nominalAtributos = np.empty(cantidadAtributos, dtype=bool)
         
-        # Descartamos la ultima columna, que solo nos indica el valor de la clase
+        # Verficamos todas las columnas, incluida la clasificacion de los datos
         for i in range(cantidadAtributos):
             aux = datosEntrada.values[0][i]
 
@@ -57,23 +59,25 @@ class Datos:
                 # Lista con los elementos albergados y listo para ordenar
                 lista_aux.sort()
 
-                #Creamos diccionario auxiliar, donde insertar las claves correctamente junto a los valores correspondientes
+                # Creamos diccionario auxiliar, donde insertar las claves correctamente junto a los valores correspondientes
                 diccionario_aux = {}
                 for i in lista_aux:
                     diccionario_aux[i] = lista_aux.index(i)
 
+                # Asignamos el diccionario auxiliar a la entrada del diccionario general
                 self.diccionario[self.atributos[h]] = diccionario_aux
 
-                #Liberamos los contenidos de la lista y el diccionario auxiliar para la siguiente columna (atributo)
+                # Liberamos los contenidos de la lista y el diccionario auxiliar para la siguiente columna (atributo)
                 diccionario_aux=None
                 lista_aux=None
             else:
+                # De ser valores enteros/reales creamos un diccionario vacio
                 self.diccionario[self.atributos[h]] = {}
 
 
         # ============================= DATOS =============================== #
 
-        # ARRAY bidimensional de tipo numerico, usamos numero de filas y de columnas de la variable datosEntrada
+        # Array bidimensional de tipo numerico, usamos numero de filas y de columnas de la variable datosEntrada
         self.datos = np.empty([cantidadDatos, 0],dtype=object)
         
         for i in range(cantidadAtributos): # Para cada uno de los atributos
@@ -91,7 +95,7 @@ class Datos:
                     entrada = valor[j]
                     columnaAtributos.append(entrada)
 
-            #Si el dato ya es de tipo numerico, se introduce
+            # Si el dato ya es de tipo numerico, se introduce
             else:
                 for j in datosEntrada[nombreAtributo]: # Para cada uno de los valores
                     
