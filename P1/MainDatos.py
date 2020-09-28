@@ -9,9 +9,8 @@ if __name__ == "__main__":
     datos = Datos(fileName)
 
     # Probamos con 30 porciento y 2 iteraciones (Validacion Simple)
-    validacion_simple = ValidacionSimple(75,2)
+    validacion_simple = ValidacionSimple(70,2)
     aux_simple = validacion_simple.creaParticiones(datos)
-
 
     # Probamos con 2 k-iteraciones
     validacion_cruzada = ValidacionCruzada(3)

@@ -142,7 +142,7 @@ class ValidacionCruzada(EstrategiaParticionado):
     for i in range(self.numParticiones):
       particion = Particion()
 
-      # Rellenamos la particion con los bloques de entrenamiento y los de prueba
+      # Rellenamos la particion con los bloques train y el test
       for j in range(len(bloques)):
         # Bloque de test
         if(j==i):
