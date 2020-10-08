@@ -57,9 +57,11 @@ class Clasificador:
       datos_tabla = []
       lista_particiones = particionado.creaParticiones(dataset)
       if(isinstance(particionado,ValidacionSimple) == True):
+        
           # Recuperaremos tantas particiones como iteraciones se hayan indicado
           for i in range(len(lista_particiones)):
 
+            #======================= FUNCION ENTRENAMIENTO ========================#
             num_registros = len(lista_particiones[i].indicesTrain)
             num_atributos = len(dataset.atributos)-1
             #Para insertar todas las tuplas en una matriz
@@ -116,8 +118,8 @@ class Clasificador:
                 valores["varianza"]=varianza
                 atributo[nombre_atributo]=valores
               clase[dataset.diccionario["Class"].items()[k][0]]=atributo
-            print(clase)
 
+            #======================== FUNCION TEST =======================#
 
 
 
