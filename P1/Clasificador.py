@@ -97,13 +97,18 @@ class Clasificador:
                 varianza=0
                 media=0
                 lista_valores_clase=[]
-                #Sacamos valor de cada uno o sumamos todos los que encontremos en esta columna
+                #Contamos numero de veces que aparece el valor de cada uno o 
+                # sumamos todos los que encontremos en esta columna
                 # Opcion B: Sumar valores
-                #Primero la media
+                
                 for m in range(num_registros):
-                  #Num ocurrencias de la clase concreta
+                  #Conciendo la clase y sabiendo que atributo estamos estudiando
+                  #comprobamos aquellas filas en las que la clase
+                  #p.e es 1 y el atributo es "color" y guardamos los valores
+                  #de esa columna/atributo
                   if(datos_tabla[m][num_atributos] == valor_clase):
                     lista_valores_clase.append(datos_tabla[m][l])
+
                 #hallamos media
                 media = np.mean(lista_valores_clase)
                 varianza = np.var(lista_valores_clase)
@@ -112,7 +117,6 @@ class Clasificador:
                 atributo[nombre_atributo]=valores
               clase[dataset.diccionario["Class"].items()[k][0]]=atributo
             print(clase)
-          
 
 
 
