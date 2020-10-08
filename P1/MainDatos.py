@@ -26,6 +26,6 @@ if __name__ == "__main__":
     print(aux_cruzada[0].indicesTest[0])"""
 
     Clasificador = ClasificadorNaiveBayes()
-    Clasificador.validacion(validacion_simple,datos,"Naive-Bayes")
+    Clasificador.validacion(validacion_simple,datos,Clasificador)
 
     

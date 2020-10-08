@@ -52,8 +52,7 @@ class Clasificador:
     # - Para validacion simple (hold-out): entrenamos el clasificador con la particion de train
     # y obtenemos el error en la particion test. Otra opcion es repetir la 
     # validacion simple un numero especificado de veces, obteniendo en cada una un error. Finalmente se calculara la media.
-    if(clasificador == "Naive-Bayes"):
-      lista_particiones = []
+    if(isinstance(clasificador, ClasificadorNaiveBayes) == True):
       datos_tabla = []
       lista_particiones = particionado.creaParticiones(dataset)
       if(isinstance(particionado,ValidacionSimple) == True):
@@ -63,62 +62,12 @@ class Clasificador:
 
             #======================= FUNCION ENTRENAMIENTO ========================#
             num_registros = len(lista_particiones[i].indicesTrain)
-            num_atributos = len(dataset.atributos)-1
-            #Para insertar todas las tuplas en una matriz
-            #Para la particion concreta vemos todas las entradas (tuplas/indices de la tabla original) 
             for j in range(num_registros):
               datos_tabla.append(dataset.datos[lista_particiones[i].indicesTrain[j]])
 
-            #Para cada clase: Sacamos la probabilidad y variacion/varianza de cada atributo
-            #con cada clase
-            probabilidad_clase = {}
-            clase={}
-            for k in range (len(dataset.diccionario["Class"])):
-              #Entrada en el diccionario de la clase a estudiar
-              clase[dataset.diccionario["Class"].items()[k][0]]={}
+            clasificador.entrenamiento(datos_tabla,dataset.nominalAtributos,dataset.diccionario)
 
-              #Valor de la clase recuperada
-              valor_clase = dataset.diccionario["Class"].items()[k][1]
-              num_registros_clase = 0
-
-              for l in range(num_registros):
-                #Num ocurrencias de la clase concreta
-                if(datos_tabla[l][num_atributos] == valor_clase):
-                  num_registros_clase+=1
-
-              #Hallamos probabilidad P(Clase A) = num_registros_clase/num_registros
-              prob=float(num_registros_clase/float(num_registros))
-              probabilidad_clase[dataset.diccionario["Class"].items()[k][0]]=prob
             
-              atributo={}
-              #Para cada clase/atributo
-              for l in range(num_atributos):
-                nombre_atributo=dataset.atributos[l]                
-                atributo[nombre_atributo]={}
-                valores={}
-                varianza=0
-                media=0
-                lista_valores_clase=[]
-                #Contamos numero de veces que aparece el valor de cada uno o 
-                # sumamos todos los que encontremos en esta columna
-                # Opcion B: Sumar valores
-                
-                for m in range(num_registros):
-                  #Conciendo la clase y sabiendo que atributo estamos estudiando
-                  #comprobamos aquellas filas en las que la clase
-                  #p.e es 1 y el atributo es "color" y guardamos los valores
-                  #de esa columna/atributo
-                  if(datos_tabla[m][num_atributos] == valor_clase):
-                    lista_valores_clase.append(datos_tabla[m][l])
-
-                #hallamos media
-                media = np.mean(lista_valores_clase)
-                varianza = np.var(lista_valores_clase)
-                valores["media"]=media
-                valores["varianza"]=varianza
-                atributo[nombre_atributo]=valores
-              clase[dataset.diccionario["Class"].items()[k][0]]=atributo
-
             #======================== FUNCION TEST =======================#
 
 
@@ -148,8 +97,66 @@ class ClasificadorNaiveBayes(Clasificador):
 
   # TODO: implementar
   def entrenamiento(self,datostrain,atributosDiscretos,diccionario):
+      
       #Lista probabilidades a priori
-    pass
+      num_registros = len(datostrain)
+      print(num_registros)
+      num_atributos = len(atributosDiscretos)-1
+
+      #Para cada clase: Sacamos la probabilidad y variacion/varianza de cada atributo
+      #con cada clase
+      probabilidad_clase = {}
+      clase={}
+      for k in range (len(diccionario["Class"])):
+        #Entrada en el diccionario de la clase a estudiar
+        clase[diccionario["Class"].items()[k][0]]={}
+
+        #Valor de la clase recuperada
+        valor_clase = diccionario["Class"].items()[k][1]
+        num_registros_clase = 0
+
+        for l in range(num_registros):
+          #Num ocurrencias de la clase concreta
+          if(datostrain[l][num_atributos] == valor_clase):
+            num_registros_clase+=1
+
+        #Hallamos probabilidad P(Clase A) = num_registros_clase/num_registros
+        prob=float(num_registros_clase/float(num_registros))
+        probabilidad_clase[diccionario["Class"].items()[k][0]]=prob
+      
+        atributo={}
+        #Para cada clase/atributo
+        for l in range(num_atributos):
+          """
+             NECESITAMOS RECUPERAR LOS NOMBRES DE LOS ATRIBUTOS, EN ORDEN!!!!
+             PUESTO QUE EN EL DICCIONARIO ESTAN DESORDENADOS Y LA TABLA PASADA
+             CON LOS DATOS (TUPLAS) ESTAN ORDENADAS LAS COLUMNAS
+          """
+          nombre_atributo=dataset.atributos[l]                
+          atributo[nombre_atributo]={}
+          valores={}
+          varianza=0
+          media=0
+          lista_valores_clase=[]
+          #Contamos numero de veces que aparece el valor de cada uno o 
+          # sumamos todos los que encontremos en esta columna
+          # Opcion B: Sumar valores
+          
+          for m in range(num_registros):
+            #Conciendo la clase y sabiendo que atributo estamos estudiando
+            #comprobamos aquellas filas en las que la clase
+            #p.e es 1 y el atributo es "color" y guardamos los valores
+            #de esa columna/atributo
+            if(datos_tabla[m][num_atributos] == valor_clase):
+              lista_valores_clase.append(datos_tabla[m][l])
+
+          #hallamos media
+          media = np.mean(lista_valores_clase)
+          varianza = np.var(lista_valores_clase)
+          valores["media"]=media
+          valores["varianza"]=varianza
+          atributo[nombre_atributo]=valores
+        clase[dataset.diccionario["Class"].items()[k][0]]=atributo
     
      
     
