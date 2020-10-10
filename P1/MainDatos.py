@@ -5,11 +5,11 @@ from Clasificador import ClasificadorNaiveBayes,Clasificador
 import sys
 
 if __name__ == "__main__":
-    fileName = "ConjuntosDatos/tic-tac-toe.data"
+    fileName = "ConjuntosDatos/german.data"
     datos = Datos(fileName)
-
+    
     # Probamos con 30 porciento y 2 iteraciones (Validacion Simple)
-    validacion_simple = ValidacionSimple(70,1)
+    validacion_simple = ValidacionSimple(2,1)
     #aux_simple = validacion_simple.creaParticiones(datos)
 
     # Probamos con 2 k-iteraciones

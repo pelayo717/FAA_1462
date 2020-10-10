@@ -74,6 +74,18 @@ class Datos:
             else:
                 # De ser valores enteros/reales creamos un diccionario vacio
                 self.diccionario[self.atributos[h]] = {}
+                
+                if(h == cantidadAtributos-1):
+                    
+                    lista_aux_class=[]
+                    for i in datosEntrada[self.atributos[h]]:
+                        if i not in lista_aux_class:
+                            lista_aux_class.append(i)
+                    diccionario_aux_class={}
+
+                    for i in lista_aux_class:
+                        diccionario_aux_class[str(i)]=i
+                    self.diccionario[self.atributos[h]]=diccionario_aux_class 
 
 
         # ============================= DATOS =============================== #
