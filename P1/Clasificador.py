@@ -5,6 +5,7 @@ from EstrategiaParticionado import ValidacionCruzada,ValidacionSimple
 import numpy as np
 import pandas as pd
 import math
+import collections
 #from tabulate import tabulate
 
 class Clasificador:
@@ -63,13 +64,11 @@ class Clasificador:
             
             # Creamos una tabla auxiliar con los datos de Train
             num_registros = len(lista_particiones[i].indicesTrain)
-
             for j in range(num_registros):
               datos_tabla_train.append(dataset.datos[lista_particiones[i].indicesTrain[j]])
             
             # Creamos una tabla auxiliar con los datos de Test
             num_registros = len(lista_particiones[i].indicesTest)
-
             for j in range(num_registros):
               datos_tabla_test.append(dataset.datos[lista_particiones[i].indicesTest[j]])
 
@@ -100,65 +99,92 @@ class ClasificadorNaiveBayes(Clasificador):
 
   # TODO: implementar
   def entrenamiento(self,datostrain,datostotales):
-      
-      #Lista probabilidades a priori
-      num_registros = len(datostrain)
-      num_atributos = len(datostotales.nominalAtributos)-1
+    
+    #Lista probabilidades a priori
+    num_registros = len(datostrain)
+    num_atributos = len(datostotales.nominalAtributos)-1
 
-      #Para cada clase: Sacamos la probabilidad y variacion/varianza de cada atributo
-      #con cada clase
-      probabilidad_clase = {}
-      clase={}
-      for k in range (len(datostotales.diccionario["Class"])):
-        #Entrada en el diccionario de la clase a estudiar
-        clase[list(datostotales.diccionario["Class"].items())[k][0]]={}
+    #Para cada clase: Sacamos la probabilidad y variacion/varianza de cada atributo
+    #con cada clase
+    probabilidad_clase = {}
 
-        #Valor de la clase recuperada
-        valor_clase = list(datostotales.diccionario["Class"].items())[k][1]
-        num_registros_clase = 0
+    #======= Primero Prob de clases ===========#
+    for k in range (len(datostotales.diccionario["Class"])):
+      #Valor de la clase recuperada
+      valor_clase = list(datostotales.diccionario["Class"].items())[k][1]        
+      num_registros_clase = 0
 
-        for l in range(num_registros):
-          #Num ocurrencias de la clase concreta
-          if(datostrain[l][num_atributos] == valor_clase):
-            num_registros_clase+=1
+      for l in range(num_registros):
+        #Num ocurrencias de la clase concreta
+        if(datostrain[l][num_atributos] == valor_clase):
+          num_registros_clase+=1
 
-        #Hallamos probabilidad P(Clase A) = num_registros_clase/num_registros
-        prob=float(num_registros_clase/float(num_registros))
-        probabilidad_clase[list(datostotales.diccionario["Class"].items())[k][0]]=prob
-      
+      #Hallamos probabilidad P(Clase A) = num_registros_clase/num_registros
+      prob=float(num_registros_clase/float(num_registros))
+      probabilidad_clase[list(datostotales.diccionario["Class"].items())[k][0]]=prob
+
+    #======= ANALIZAMOS CADA ATRIBUTO ===========#
+    analisis_atributos={}
+    for k in range (num_atributos):
+      nombre_atributo=datostotales.atributos[k]
+
+      #Atributo nominal o entero
+      if(datostotales.nominalAtributos[k] == True): #Caso de Nominal
+        #Matriz y conteo(debemos saber clases en eje Y y posibles valores en eje X)
+        nombres_clases=[]
+        valores_clases=[] #Eje Y
+        for m in range (len(datostotales.diccionario["Class"])):
+          #Valor de la clase recuperada
+          nombres_clases.append(datostotales.diccionario["Class"].items()[m][0])
+          valores_clases.append(datostotales.diccionario["Class"].items()[m][1])  
+
+        valores_posibles=[] #Eje X
+        for n in range(len(datostotales.diccionario[nombre_atributo].items())):
+          if(datostotales.diccionario[nombre_atributo].items()[n][1] not in valores_posibles):
+            valores_posibles.append(datostotales.diccionario[nombre_atributo].items()[n][1])
+
+        #Creamos matriz de dimensiones especificas
+        matriz_atributo= np.empty((len(valores_clases), len(valores_posibles)))
+        for l in range(len(valores_clases)):
+          valores_columna=[]
+          for o in range(num_registros):
+              if(datostrain[o][num_atributos] == valores_clases[l]):
+                valores_columna.append(datostrain[o][k])
+
+
+          for p in range(len(valores_posibles)):
+            matriz_atributo[l][p]=collections.Counter(valores_columna)[valores_posibles[p]]
+
+        if(np.count_nonzero(matriz_atributo) != len(valores_clases)*len(valores_posibles)): #No hay ceros
+          matriz_atributo = matriz_atributo + 1
+        
+        analisis_atributos[nombre_atributo] = matriz_atributo
+
+
+                
+      else: #Caso de Entero/Real
+        calculos={}
         atributo={}
-        #Para cada clase/atributo
-        for l in range(num_atributos):
-
-          nombre_atributo = datostotales.atributos[l]                
-          atributo[nombre_atributo]={}
-          valores={}
-          varianza=0
-          media=0
-          lista_valores_clase=[]
-
-          #Contamos numero de veces que aparece el valor de cada uno o 
-          # sumamos todos los que encontremos en esta columna
-          
-          for m in range(num_registros):
-            #Conciendo la clase y sabiendo que atributo estamos estudiando
-            #comprobamos aquellas filas en las que la clase
-            #p.e es 1 y el atributo es "color" y guardamos los valores
-            #de esa columna/atributo
-            if(datostrain[m][num_atributos] == valor_clase):
-              lista_valores_clase.append(datostrain[m][l])
+        for m in range(len(datostotales.diccionario["Class"])):
+          nombre_clase = datostotales.diccionario["Class"].items()[m][0]
+          valor_clase = datostotales.diccionario["Class"].items()[m][1]
+          media = 0
+          varianza = 0
+          lista_valores_clase = []
+          for n in range(num_registros):
+            if(datostrain[n][num_atributos] == valor_clase):
+              lista_valores_clase.append(datostrain[n][k])
 
           # Hallamos media y varianza
           media = np.mean(lista_valores_clase)
           varianza = np.var(lista_valores_clase)
-          valores["media"]=media
-          valores["varianza"]=varianza
-          atributo[nombre_atributo]=valores
+          calculos["media"]=media
+          calculos["varianza"]=varianza
+          atributo[nombre_clase]=calculos
+        analisis_atributos[nombre_atributo] = atributo
 
-        # Aniadimos la media y la varianza de todos los atributos con respecto a esa clase 
-        clase[list(datostotales.diccionario["Class"].items())[k][0]]=atributo
-
-      return (probabilidad_clase, clase)    
+    print(analisis_atributos)
+    return (probabilidad_clase, analisis_atributos) 
      
     
   # TODO: implementar
@@ -179,11 +205,13 @@ class ClasificadorNaiveBayes(Clasificador):
 
         for j in range(num_atributos):
           nombre_atributo = datostotales.atributos[j]
-          valor_atributo = datostest[l][j]
+          valor_atributo = float(datostest[l][j])
           varianza =  tabla_clase[nombre_atributo]['varianza']
           media =  tabla_clase[nombre_atributo]['media']
 
-          prob_atributo = 1 / (math.sqrt(2 * math.pi * varianza) * math.exp(- ((valor_atributo - media)**2 / 2*varianza)))
+          aux1=(math.sqrt(2 * math.pi * varianza) * math.exp(- ((valor_atributo - media)**2 / (2*varianza))))
+          
+          prob_atributo = 1 / aux1
 
           verosimilitudes *= prob_atributo
         
