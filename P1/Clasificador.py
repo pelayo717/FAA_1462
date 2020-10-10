@@ -165,33 +165,45 @@ class ClasificadorNaiveBayes(Clasificador):
   def clasifica(self, datostest, datostotales, tabla_clases, probabilidad_clase):
     predicciones = []
 
-    num_datos = len(datostest)
-    num_atributos = len(datostotales.nominalAtributos)-1
+    num_datos = len(datostest)                            # Numero de datos totales en test
+    num_atributos = len(datostotales.nominalAtributos)-1  # Numero de atributos del dataset
 
-    for l in range(num_datos):
-      prob_posteriori = {}
-
-      for i in range(len(datostotales.diccionario["Class"])):
-        prob_clase = list(probabilidad_clase.items())[i][1]
-        tabla_clase = list(tabla_clases.items())[i][1]
-
+    # Para cada uno de los datos de test
+    for n in range(num_datos):
+      probabilidades_post = {}
+      
+      # Para cada una de las hipotesis de la clase
+      for k in range(len(datostotales.diccionario["Class"])):
+        prob_priori = probabilidad_clase[k]
         verosimilitudes = 1.0
 
-        for j in range(num_atributos):
-          nombre_atributo = datostotales.atributos[j]
-          valor_atributo = datostest[l][j]
-          varianza =  tabla_clase[nombre_atributo]['varianza']
-          media =  tabla_clase[nombre_atributo]['media']
+        # Para cada uno de los atributos del dataset
+        for x in range(num_atributos):
+          ->tabla_atributo = list(tabla_clases.items())[x][1]
 
-          prob_atributo = 1 / (math.sqrt(2 * math.pi * varianza) * math.exp(- ((valor_atributo - media)**2 / 2*varianza)))
+        ### Comprobamos si el atributo es nominal o numerico ###
 
-          verosimilitudes *= prob_atributo
+          # Si el atributo es nominal
+          if datostotales.nominalAtributos[x] == True:
+            # TODO
         
-        prob_NB = prob_clase * verosimilitudes
+          # Si el atributo es numerico
+          else:
+            ->nombre_atributo = datostotales.atributos[x]  
+            ->valor_atributo = datostest[n][x]
+            ->varianza =  tabla_clase[nombre_atributo]['varianza']
+            ->media =  tabla_clase[nombre_atributo]['media']
 
-        prob_posteriori[list(datostotales.diccionario["Class"].items())[i][1]] = prob_NB
+            # Calculamos la verosimilitud de la clase
+            verosimilitud_clase = 1 / (math.sqrt(2 * math.pi * varianza) * math.exp(- ((valor_atributo - media)**2 / 2*varianza)))
 
-      predice = max(prob_posteriori, key=prob_posteriori.get)
+          # Multiplicamos las probabilidades P(D=x|H=k)  
+          verosimilitudes *= verosimilitud_clase 
+        
+        prob_posteriori = prob_priori * verosimilitudes
+
+        probabilidades_post[list(datostotales.diccionario["Class"].items())[k][1]] = prob_posteriori
+
+      predice = max(probabilidades_post, key=probabilidades_post.get)
       predicciones.append(predice)
-    print(predicciones)
-    pass
+    return predicciones
