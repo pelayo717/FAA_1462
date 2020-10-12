@@ -146,9 +146,9 @@ class ValidacionCruzada(EstrategiaParticionado):
       for j in range(len(bloques)):
         # Bloque de test
         if(j==i):
-          particion.indicesTest.append(bloques[j])
+          particion.indicesTest = bloques[j][:]
         else: # Resto, bloques de train
-          particion.indicesTrain.append(bloques[j])
+          particion.indicesTrain = bloques[j][:]
 
       listaParticiones.append(particion)
       particion=None

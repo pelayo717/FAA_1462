@@ -31,7 +31,6 @@ class Clasificador:
   
   
   # Obtiene el numero de aciertos y errores para calcular la tasa de fallo
-  # TODO: implementar
   def error(self, datostest, pred):
     aciertos = 0
     totales = len(datostest)
@@ -49,11 +48,6 @@ class Clasificador:
   """Entendemos que clasificador se refiere a Naive-Bayes o Knn (el nombre)"""
 
   def validacion(self,particionado,dataset,seed=None):
-    #Iterar X veces
-      #Entrenar con conjunto de datos
-      #Validar conjunto de datos
-      #Obtener error
-
     # Creamos las particiones siguiendo la estrategia llamando a particionado.creaParticiones
     # - Para validacion cruzada: en el bucle hasta nv entrenamos el clasificador con la particion de train i
     # y obtenemos el error en la particion de test i
@@ -65,44 +59,40 @@ class Clasificador:
       datos_tabla_test = []
       lista_particiones = particionado.creaParticiones(dataset)
       media_error = 0.0
-      if(isinstance(particionado,ValidacionSimple) == True):
         
-          # Recuperaremos tantas particiones como iteraciones se hayan indicado
-          for i in range(len(lista_particiones)):
-            
-            # Creamos una tabla auxiliar con los datos de Train
-            num_registros = len(lista_particiones[i].indicesTrain)
-            for j in range(num_registros):
-              datos_tabla_train.append(dataset.datos[lista_particiones[i].indicesTrain[j]])
-            
-            # Creamos una tabla auxiliar con los datos de Test
-            num_registros = len(lista_particiones[i].indicesTest)
-            for j in range(num_registros):
-              datos_tabla_test.append(dataset.datos[lista_particiones[i].indicesTest[j]])
+      # Recuperaremos tantas particiones como iteraciones se hayan indicado
+      for i in range(len(lista_particiones)):
+        
+        # Creamos una tabla auxiliar con los datos de Train
+        num_registros = len(lista_particiones[i].indicesTrain)
+        for j in range(num_registros):
+          datos_tabla_train.append(dataset.datos[lista_particiones[i].indicesTrain[j]])
+        
+        # Creamos una tabla auxiliar con los datos de Test
+        num_registros = len(lista_particiones[i].indicesTest)
+        for j in range(num_registros):
+          datos_tabla_test.append(dataset.datos[lista_particiones[i].indicesTest[j]])
 
-            # LLamamos a la funcion de entrenamiento
-            entrenamiento = self.entrenamiento(datos_tabla_train,dataset)
-            probabilidad_clase = entrenamiento[0] # Probabilidad a Priori de las hipotesis
-            analisis_atributos = entrenamiento[1] # Tablas de los atributos
+        # LLamamos a la funcion de entrenamiento
+        entrenamiento = self.entrenamiento(datos_tabla_train,dataset)
+        probabilidad_clase = entrenamiento[0] # Probabilidad a Priori de las hipotesis
+        analisis_atributos = entrenamiento[1] # Tablas de los atributos
 
-            # Llamamos a la funcion de clasificacion
-            predicciones = self.clasifica(datos_tabla_test, dataset, analisis_atributos, probabilidad_clase)
-            
-            # Llamamos a la funcion de calculo del error
-            tasa_acierto = self.error(datos_tabla_test, predicciones)
-            
-            # Sumamos las tasas de fallo para calcular la media posteriormente
-            media_error += (1 - tasa_acierto)
+        # Llamamos a la funcion de clasificacion
+        predicciones = self.clasifica(datos_tabla_test, dataset, analisis_atributos, probabilidad_clase)
+        
+        # Llamamos a la funcion de calculo del error
+        tasa_acierto = self.error(datos_tabla_test, predicciones)
+        
+        # Sumamos las tasas de fallo para calcular la media posteriormente
+        media_error += (1 - tasa_acierto)
 
-          media_error = media_error / len(lista_particiones)
-          return media_error
-          
-      elif(isinstance(particionado,ValidacionCruzada) == True):
-          print("Por implementar")
-      else:
-          print("Error en el argumento particionado")  
+      media_error = media_error / len(lista_particiones)
+      return media_error
+
+    # Clasificador K-NN
     elif(self == "KNN"):
-      print("En proceso")
+      print("Por Implementar")
     
 
 
@@ -242,6 +232,11 @@ class ClasificadorNaiveBayes(Clasificador):
           else:
             varianza =  list(tabla_atributo.items())[k][1]['varianza']
             media =  list(tabla_atributo.items())[k][1]['media']
+
+            # Control de errores en caso de que la varianza sea 0
+            if varianza == 0.0:
+              varianza = 0.000001 # Convertimos la varianza en 10^-6
+            
             # Calculamos la verosimilitud de la clase
             verosimilitud_clase = 1 / (math.sqrt(2 * math.pi * varianza)) * math.exp(- ( pow(valor_atributo - media, 2) / 2*varianza))
 
