@@ -59,19 +59,15 @@ class Clasificador:
       datos_tabla_test = []
       lista_particiones = particionado.creaParticiones(dataset)
       media_error = 0.0
-        
+            
       # Recuperaremos tantas particiones como iteraciones se hayan indicado
       for i in range(len(lista_particiones)):
         
         # Creamos una tabla auxiliar con los datos de Train
-        num_registros = len(lista_particiones[i].indicesTrain)
-        for j in range(num_registros):
-          datos_tabla_train.append(dataset.datos[lista_particiones[i].indicesTrain[j]])
+        datos_tabla_train = dataset.extraeDatos(lista_particiones[i].indicesTrain)
         
         # Creamos una tabla auxiliar con los datos de Test
-        num_registros = len(lista_particiones[i].indicesTest)
-        for j in range(num_registros):
-          datos_tabla_test.append(dataset.datos[lista_particiones[i].indicesTest[j]])
+        datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest)
 
         # LLamamos a la funcion de entrenamiento
         entrenamiento = self.entrenamiento(datos_tabla_train,dataset)
@@ -83,7 +79,7 @@ class Clasificador:
         
         # Llamamos a la funcion de calculo del error
         tasa_acierto = self.error(datos_tabla_test, predicciones)
-        
+
         # Sumamos las tasas de fallo para calcular la media posteriormente
         media_error += (1 - tasa_acierto)
 
@@ -142,7 +138,7 @@ class ClasificadorNaiveBayes(Clasificador):
         for m in range (len(datostotales.diccionario["Class"])):
           #Valor de la clase recuperada
           nombres_clases.append(list(datostotales.diccionario["Class"].items())[m][0])
-          valores_clases.append(list(datostotales.diccionario["Class"].items())[m][1])  
+          valores_clases.append(list(datostotales.diccionario["Class"].items())[m][1])
 
         valores_posibles=[] #Eje X
         for n in range(len(datostotales.diccionario[nombre_atributo].items())):
@@ -157,16 +153,15 @@ class ClasificadorNaiveBayes(Clasificador):
               if(datostrain[o][num_atributos] == valores_clases[l]):
                 valores_columna.append(datostrain[o][k])
 
-
           for p in range(len(valores_posibles)):
             matriz_atributo[l][p]=collections.Counter(valores_columna)[valores_posibles[p]]
 
+
+        #Laplace
         if(np.count_nonzero(matriz_atributo) != len(valores_clases)*len(valores_posibles)): #No hay ceros
           matriz_atributo = matriz_atributo + 1
         
         analisis_atributos[nombre_atributo] = matriz_atributo
-
-
                 
       else: #Caso de Entero/Real
         calculos={}
@@ -194,7 +189,6 @@ class ClasificadorNaiveBayes(Clasificador):
 
   def clasifica(self, datostest, datostotales, analisis_atributos, probabilidad_clase):
     predicciones = []
-
     num_datos = len(datostest)                            # Numero de datos totales en test
     num_atributos = len(datostotales.nominalAtributos)-1  # Numero de atributos del dataset
 
@@ -210,35 +204,37 @@ class ClasificadorNaiveBayes(Clasificador):
 
         # Para cada uno de los atributos del dataset
         for x in range(num_atributos):
-          tabla_atributo = list(analisis_atributos.items())[x][1]
-          valor_atributo = float(datostest[n][x])
-        ### Comprobamos si el atributo es nominal o numerico ###
-          
+
+          ### Comprobamos si el atributo es nominal o numerico ###
           # Si el atributo es nominal
           if datostotales.nominalAtributos[x] == True:
+            tabla_atributo = analisis_atributos[datostotales.atributos[x]]
+            valor_atributo = float(datostest[n][x])
+
             # Seleccionamos el valor del atributo
             for i in range(len(tabla_atributo[0])):
               # Cuando encontremos el valor del atributo, calculamos su verosimilitud
-              if valor_atributo == float(i):
+
+              if valor_atributo == float(list(datostotales.diccionario[datostotales.atributos[x]].items())[i][1]):
+                
                 # Calculamos el denominador 
                 denominador = 0.0
-                for j in range(len(tabla_atributo[0])):
-                  denominador += tabla_atributo[0][j]
+                for j in range(len(tabla_atributo[k])):
+                  denominador += tabla_atributo[k][j]
 
-                verosimilitud_clase = tabla_atributo[0][i] / denominador
+                verosimilitud_clase = tabla_atributo[k][i] / denominador
                 break
 
           # Si el atributo es numerico
           else:
-            varianza =  list(tabla_atributo.items())[k][1]['varianza']
-            media =  list(tabla_atributo.items())[k][1]['media']
+            varianza =  analisis_atributos[datostotales.atributos[x]].values()[k]['varianza']
+            media =  analisis_atributos[datostotales.atributos[x]].values()[k]['media']
 
             # Control de errores en caso de que la varianza sea 0
             if varianza == 0.0:
               varianza = 0.000001 # Convertimos la varianza en 10^-6
             
             # Calculamos la verosimilitud de la clase
-            """DUDA: La resta no deberia estar junto a pow??? Desconozco sin influye mucho"""
             #verosimilitud_clase = 1 / (math.sqrt(2 * math.pi * varianza)) * math.exp(- ( pow(valor_atributo - media, 2) / 2*varianza))
             verosimilitud_clase = 1 / (math.sqrt(2 * math.pi * varianza)) * math.exp( - pow(valor_atributo - media, 2) / 2*varianza)
 

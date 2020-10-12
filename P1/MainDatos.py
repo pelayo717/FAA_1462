@@ -4,9 +4,9 @@ from EstrategiaParticionado import ValidacionCruzada
 from Clasificador import ClasificadorNaiveBayes,Clasificador
 import sys
 
-from sklearn.datasets import load_iris
+"""from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import GaussianNB"""
 
 if __name__ == "__main__":
     fileName = "ConjuntosDatos/german.data"
@@ -16,30 +16,12 @@ if __name__ == "__main__":
     validacion_simple = ValidacionSimple(20,1)
     aux_simple = validacion_simple.creaParticiones(datos)
 
-<<<<<<< HEAD
     # Probamos con 3 k-iteraciones
     validacion_cruzada = ValidacionCruzada(3)
     aux_cruzada = validacion_cruzada.creaParticiones(datos)
 
-=======
-
-    # Probamos con 2 k-iteraciones
-    validacion_cruzada = ValidacionCruzada(3)
-    aux_cruzada = validacion_cruzada.creaParticiones(datos)
-
-
-    """print(aux_cruzada)
-    print(len(aux_cruzada[0].indicesTrain[0]))
-    print(len(aux_cruzada[0].indicesTrain[1]))
-    print(len(aux_cruzada[0].indicesTest[0]))
-   
-    print(aux_cruzada[0].indicesTrain[0])
-    print(aux_cruzada[0].indicesTrain[1])
-    print(aux_cruzada[0].indicesTest[0])"""
-
->>>>>>> 7914e52e8f04cf970bf5818185171fc3ef550159
     Clasificador = ClasificadorNaiveBayes()
-    media = Clasificador.validacion(validacion_cruzada,datos)
+    media = Clasificador.validacion(validacion_simple,datos)
     print("Error medio: " + str(media))
 
 

@@ -119,4 +119,8 @@ class Datos:
 
     # TODO: implementar en la practica 1
     def extraeDatos(self, idx):
-        pass
+        datos_tabla=[]
+        num_indices=len(idx)
+        for i in range(num_indices):
+            datos_tabla.append(self.datos[idx[i]])
+        return datos_tabla
