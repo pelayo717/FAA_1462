@@ -37,8 +37,8 @@ class Clasificador:
     for i in range(totales):
       if datostest[i][-1] == pred[i]:
         aciertos += 1
+    tasa_aciertos = float(aciertos) / float(totales)
     
-    tasa_aciertos = aciertos / totales
     return tasa_aciertos
     
     

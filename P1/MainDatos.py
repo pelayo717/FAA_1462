@@ -22,8 +22,10 @@ if __name__ == "__main__":
 
     Clasificador = ClasificadorNaiveBayes()
     media = Clasificador.validacion(validacion_simple,datos)
-    print("Error medio: " + str(media))
+    print("Error medio Simple German.data: " + str(media))
 
+    media = Clasificador.validacion(validacion_cruzada,datos)
+    print("Error medio Cruzada German.data: " + str(media))
 
     #### SKLEARN ####
     #X = load_iris()
