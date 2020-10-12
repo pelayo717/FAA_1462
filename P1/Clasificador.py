@@ -99,6 +99,38 @@ class Clasificador:
           
       elif(isinstance(particionado,ValidacionCruzada) == True):
           print("Por implementar")
+          
+          #Practicamente igual que validacion simple
+
+          """# Recuperaremos tantas particiones como iteraciones se hayan indicado
+          for i in range(len(lista_particiones)):
+            
+            # Creamos una tabla auxiliar con los datos de Train
+            num_registros = len(lista_particiones[i].indicesTrain)
+            for j in range(num_registros):
+              datos_tabla_train.append(dataset.datos[lista_particiones[i].indicesTrain[j]])
+            
+            # Creamos una tabla auxiliar con los datos de Test
+            num_registros = len(lista_particiones[i].indicesTest)
+            for j in range(num_registros):
+              datos_tabla_test.append(dataset.datos[lista_particiones[i].indicesTest[j]])
+
+            # LLamamos a la funcion de entrenamiento
+            entrenamiento = self.entrenamiento(datos_tabla_train,dataset)
+            probabilidad_clase = entrenamiento[0] # Probabilidad a Priori de las hipotesis
+            analisis_atributos = entrenamiento[1] # Tablas de los atributos
+
+            # Llamamos a la funcion de clasificacion
+            predicciones = self.clasifica(datos_tabla_test, dataset, analisis_atributos, probabilidad_clase)
+            
+            # Llamamos a la funcion de calculo del error
+            tasa_acierto = self.error(datos_tabla_test, predicciones)
+            
+            # Sumamos las tasas de fallo para calcular la media posteriormente
+            media_error += (1 - tasa_acierto)
+
+          media_error = media_error / len(lista_particiones)
+          return media_error"""
       else:
           print("Error en el argumento particionado")  
     elif(self == "KNN"):
@@ -243,7 +275,9 @@ class ClasificadorNaiveBayes(Clasificador):
             varianza =  list(tabla_atributo.items())[k][1]['varianza']
             media =  list(tabla_atributo.items())[k][1]['media']
             # Calculamos la verosimilitud de la clase
-            verosimilitud_clase = 1 / (math.sqrt(2 * math.pi * varianza)) * math.exp(- ( pow(valor_atributo - media, 2) / 2*varianza))
+            """DUDA: La resta no deberia estar junto a pow??? Desconozco sin influye mucho"""
+            #verosimilitud_clase = 1 / (math.sqrt(2 * math.pi * varianza)) * math.exp(- ( pow(valor_atributo - media, 2) / 2*varianza))
+            verosimilitud_clase = 1 / (math.sqrt(2 * math.pi * varianza)) * math.exp( - pow(valor_atributo - media, 2) / 2*varianza)
 
           # Multiplicamos las probabilidades P(D=x|H=k)  
           verosimilitudes *= verosimilitud_clase 

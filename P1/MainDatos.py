@@ -12,9 +12,11 @@ if __name__ == "__main__":
     validacion_simple = ValidacionSimple(20,3)
     aux_simple = validacion_simple.creaParticiones(datos)
 
+
     # Probamos con 2 k-iteraciones
     validacion_cruzada = ValidacionCruzada(3)
     aux_cruzada = validacion_cruzada.creaParticiones(datos)
+
 
     """print(aux_cruzada)
     print(len(aux_cruzada[0].indicesTrain[0]))
