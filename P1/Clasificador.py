@@ -227,8 +227,8 @@ class ClasificadorNaiveBayes(Clasificador):
 
           # Si el atributo es numerico
           else:
-            varianza =  analisis_atributos[datostotales.atributos[x]].values()[k]['varianza']
-            media =  analisis_atributos[datostotales.atributos[x]].values()[k]['media']
+            varianza =  list(analisis_atributos[datostotales.atributos[x]].values())[k]['varianza']
+            media =  list(analisis_atributos[datostotales.atributos[x]].values())[k]['media']
 
             # Control de errores en caso de que la varianza sea 0
             if varianza == 0.0:
