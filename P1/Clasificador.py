@@ -84,15 +84,8 @@ class Clasificador:
         media_error += (1 - tasa_acierto)
 
       media_error = media_error / len(lista_particiones)
-      return media_error
+      return media_error,datos_tabla_test,predicciones
 
-    # Clasificador K-NN
-    elif(self == "KNN"):
-      print("Por Implementar")
-    
-
-
-    pass
 ##############################################################################
 
 class ClasificadorNaiveBayes(Clasificador):

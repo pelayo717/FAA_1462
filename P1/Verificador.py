@@ -104,6 +104,8 @@ class Verificador_GaussianNB(Verificador):
     gnb = None
     datos = None
     pred = None
+    real_pred = None
+
 
     def __init__(self,prepro,tipo_validacion,porcentaje,folds,archivo):
         self.gnb = GaussianNB()
@@ -122,13 +124,15 @@ class Verificador_GaussianNB(Verificador):
             #Entreamos el clasificador
             self.gnb.fit(X_train, Y_train)
             #Predecimos
-            pred = self.gnb.predict(X_test)
-            fallos = (Y_test != pred).sum()
-            print("Verificador GaussianNB ==> Error medio Simple (%f) en archivo %s" % (float(fallos)/float(len(pred)),archivo))
+            self.pred = self.gnb.predict(X_test)
+            self.real_pred = Y_test
+            fallos = (Y_test != self.pred).sum()
+            print("Verificador GaussianNB ==> Error medio Simple (%f) en archivo %s" % (float(fallos)/float(len(self.pred)),archivo))
         elif(tipo_validacion == 2):
-            acierto_carpetas, pred = self.validacion_Cruzada(self.gnb,X,Y,folds)
-            fallos = (Y != pred).sum()
-            print("Verificador GaussianNB ==> Error medio Cruzado (%f) en archivo %s" % (float(fallos)/float(len(pred)),archivo))
+            acierto_carpetas, self.pred = self.validacion_Cruzada(self.gnb,X,Y,folds)
+            self.real_pred = Y
+            fallos = (Y != self.pred).sum()
+            print("Verificador GaussianNB ==> Error medio Cruzado (%f) en archivo %s" % (float(fallos)/float(len(self.pred)),archivo))
             #print(acierto_carpetas)
 
 
@@ -139,6 +143,7 @@ class Verificador_Multinominal(Verificador):
     clf = None
     datos = None
     pred = None
+    real_pred = None
 
     def __init__(self,prepro,tipo_validacion,porcentaje,folds,archivo,alpha=1.0,fit_prior=True):
         self.clf = MultinomialNB(alpha=alpha,fit_prior=fit_prior)
@@ -156,11 +161,13 @@ class Verificador_Multinominal(Verificador):
             #Entreamos el clasificador
             self.clf.fit(X_train, Y_train)
             #Predecimos
-            pred = self.clf.predict(X_test)
-            fallos = (Y_test != pred).sum()
-            print("Verificador MultinominalNB ==> Error medio Simple (%f) en archivo %s" % (float(fallos)/float(len(pred)),archivo))
+            self.pred = self.clf.predict(X_test)
+            self.real_pred = Y_test
+            fallos = (Y_test != self.pred).sum()
+            print("Verificador MultinominalNB ==> Error medio Simple (%f) en archivo %s" % (float(fallos)/float(len(self.pred)),archivo))
         elif(tipo_validacion == 2):
-            acierto_carpetas, pred = self.validacion_Cruzada(self.clf,X,Y,folds)
-            fallos = (Y != pred).sum()
-            print("Verificador MultinominalNB ==> Error medio Cruzado (%f) en archivo %s" % (float(fallos)/float(len(pred)),archivo))
+            acierto_carpetas, self.pred = self.validacion_Cruzada(self.clf,X,Y,folds)
+            self.real_pred = Y
+            fallos = (Y != self.pred).sum()
+            print("Verificador MultinominalNB ==> Error medio Cruzado (%f) en archivo %s" % (float(fallos)/float(len(self.pred)),archivo))
             #print(acierto_carpetas)
