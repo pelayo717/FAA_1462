@@ -235,7 +235,6 @@ class ClasificadorNaiveBayes(Clasificador):
               varianza = 0.000001 # Convertimos la varianza en 10^-6
             
             # Calculamos la verosimilitud de la clase
-            #verosimilitud_clase = 1 / (math.sqrt(2 * math.pi * varianza)) * math.exp(- ( pow(valor_atributo - media, 2) / 2*varianza))
             verosimilitud_clase = 1 / (math.sqrt(2 * math.pi * varianza)) * math.exp( - pow(valor_atributo - media, 2) / 2*varianza)
 
           # Multiplicamos las probabilidades P(D=x|H=k)  
