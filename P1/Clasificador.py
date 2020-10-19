@@ -32,14 +32,33 @@ class Clasificador:
   
   # Obtiene el numero de aciertos y errores para calcular la tasa de fallo
   def error(self, datostest, pred):
+    tp = 0.0
+    tn = 0.0
+    fn = 0.0
+    fp = 0.0
     aciertos = 0
+
+    # La clase que tomaremos como "positiva" será la primera que se haya predicho
+    positive_class = pred[0]
+
     totales = len(datostest)
     for i in range(totales):
-      if datostest[i][-1] == pred[i]:
-        aciertos += 1
+      if pred[i] == positive_class:
+        if datostest[i][-1] == pred[i]:
+          aciertos += 1
+          tp += 1
+        else:
+          fp += 1
+      else:
+        if datostest[i][-1] == pred[i]:
+          aciertos += 1
+          tn += 1
+        else:
+          fn += 1
+      
     tasa_aciertos = float(aciertos) / float(totales)
     
-    return tasa_aciertos
+    return tasa_aciertos, tp, fp, tn, fn
     
     
     
@@ -59,6 +78,10 @@ class Clasificador:
       datos_tabla_test = []
       lista_particiones = particionado.creaParticiones(dataset)
       media_error = 0.0
+      media_tp = 0.0
+      media_fp = 0.0
+      media_tn = 0.0
+      media_fn = 0.0
             
       # Recuperaremos tantas particiones como iteraciones se hayan indicado
       for i in range(len(lista_particiones)):
@@ -77,14 +100,25 @@ class Clasificador:
         # Llamamos a la funcion de clasificacion
         predicciones = self.clasifica(datos_tabla_test, dataset, analisis_atributos, probabilidad_clase)
         
-        # Llamamos a la funcion de calculo del error
-        tasa_acierto = self.error(datos_tabla_test, predicciones)
+        # Llamamos a la funcion de calculo del error y las tasas
+        tasa_acierto, tp, fp, tn, fn = self.error(datos_tabla_test, predicciones)
 
         # Sumamos las tasas de fallo para calcular la media posteriormente
         media_error += (1 - tasa_acierto)
 
+        # Sumamos las tasas tp, fp, tn y fn
+        media_tp += tp
+        media_fp += fp
+        media_tn += tn
+        media_fn += fn
+
       media_error = media_error / len(lista_particiones)
-      return media_error,datos_tabla_test,predicciones
+      media_tp =  media_tp / len(lista_particiones)
+      media_fp =  media_fp / len(lista_particiones)
+      media_tn =  media_tn / len(lista_particiones)
+      media_fn =  media_fn / len(lista_particiones)
+
+      return media_error, media_tp, media_fp, media_tn, media_fn
 
 ##############################################################################
 

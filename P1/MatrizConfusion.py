@@ -89,8 +89,24 @@ class MatrizConfusion():
         self.fpr_array.append(self.fpr)
         print(self.fpr_array)
 
-        
-    
+    def matrix_media(self, tp1, tp2, fp1, fp2, tn1, tn2, fn1, fn2):
+        tp_media = (tp1 + tp2) / 2
+        fp_media = (fp1 + fp2) / 2
+        tn_media = (tn1 + tn2) / 2
+        fn_media = (fn1 + fn2) / 2
+
+        self.print_matrix(tp_media, fp_media, tn_media, fn_media)
+
+        tpr = tp_media / (tp1 + fn1)
+        fpr = fp_media / (fp1 + tn1)
+
+        return tpr, fpr
+
+    def print_matrix(self, tp, fp, tn, fn):
+        print("Matriz Confusion          Real")
+        print("           |         " + str(round(tp, 3)) + "  " + str(round(fp, 3)))
+        print(" Estimado  |         " + str(round(fn, 3)) + "  " + str(round(tn, 3)))
+
     def plot(self):
         print("EN DESARROLLO")
         """roc_auc = metrics.auc(self.fpr_array, self.tpr_array)
