@@ -26,10 +26,10 @@ if __name__ == "__main__":
     aux_cruzada_tic = validacion_cruzada_tic.creaParticiones(datos_tic)
 
     Clasificador_tic = ClasificadorNaiveBayes()
-    media,datos_completos1,predicciones1 = Clasificador_tic.validacion(validacion_simple_tic,datos_tic)
+    media,datos_completos1,predicciones1 = Clasificador_tic.validacion(validacion_simple_tic,datos_tic,True)
     print("Error medio Simple Tic-Tac-Toe.data: " + str(media))
 
-    media,datos_completos2,predicciones2 = Clasificador_tic.validacion(validacion_cruzada_tic,datos_tic)
+    media,datos_completos2,predicciones2 = Clasificador_tic.validacion(validacion_cruzada_tic,datos_tic,True)
     print("Error medio Cruzada Tic-Tac-Toe.data: " + str(media))
 
     ############################## GERMAN DATA ###########################################
@@ -46,10 +46,10 @@ if __name__ == "__main__":
     aux_cruzada_ger = validacion_cruzada_ger.creaParticiones(datos_ger)
 
     Clasificador_ger = ClasificadorNaiveBayes()
-    media,datos_completos3,predicciones3 = Clasificador_ger.validacion(validacion_simple_ger,datos_ger)
+    media,datos_completos3,predicciones3 = Clasificador_ger.validacion(validacion_simple_ger,datos_ger,True)
     print("Error medio Simple German.data: " + str(media))
 
-    media,datos_completos4,predicciones4 = Clasificador_ger.validacion(validacion_cruzada_ger,datos_ger)
+    media,datos_completos4,predicciones4 = Clasificador_ger.validacion(validacion_cruzada_ger,datos_ger,True)
     print("Error medio Cruzada German.data: " + str(media))
 
 
@@ -77,8 +77,5 @@ if __name__ == "__main__":
 
     ############################## MATRIZ CONFUSION ###########################################
 
-
-    mx1 = MatrizConfusion(predicciones2,datos_completos2)
-    mx1.matrix_design()
-    mx1.plot()
-
+    mx1 = MatrizConfusion()
+    mx1.matrix_design(predicciones1,datos_completos1)

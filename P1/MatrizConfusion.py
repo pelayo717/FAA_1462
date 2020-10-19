@@ -2,6 +2,7 @@ import numpy as np
 from sklearn import metrics
 import matplotlib.pyplot as plt
 from collections import Counter
+from sklearn.linear_model import LinearRegression
 
 
 class MatrizConfusion():
@@ -13,17 +14,22 @@ class MatrizConfusion():
     fpr=None
     tnr=None
     y=None
-    fpr_array=[]
-    tpr_array=[]
+    tpr_array=None
+    tpr_array=None
 
-    def __init__(self,prediccion,real_prediccion):
+
+    def __init__(self):
+        self.fpr_array=[]
+        self.tpr_array=[]
+
+    def matrix_design(self,prediccion,real_prediccion):
+
         self.pred=prediccion
         self.real_pred=real_prediccion
         self.y=[]
         for o in range(len(self.real_pred)):
             self.y.append(self.real_pred[o][-1])
 
-    def matrix_design(self):
         #Contamos cuantos de cada clase
         valores_columna=[]
         for i in range(len(self.real_pred)):
@@ -45,9 +51,9 @@ class MatrizConfusion():
             diccionario_fallos[valores_columna[j]]=cnt_clase
         
         print("=> DATOS DE MATRIZ DE CONFUSION =>")
-        """print(valores_columna)
+        print(valores_columna)
         print(cnt_real)
-        print(diccionario_fallos)"""
+        print(diccionario_fallos)
 
         #PRESENTACION MATRIZ
         print("    " + str(valores_columna))
@@ -68,7 +74,7 @@ class MatrizConfusion():
         print(self.tpr) #eje Y
         print(self.fnr)
 
-        self.tpr_array.append(self.fnr)
+        #self.tpr_array.append(self.fnr)
         self.tpr_array.append(self.tpr)
         print(self.tpr_array)
 
@@ -79,15 +85,15 @@ class MatrizConfusion():
 
         print(self.fpr) #eje X
         print(self.tnr)
-        self.fpr_array.append(self.tnr)
+        #self.fpr_array.append(self.tnr)
         self.fpr_array.append(self.fpr)
         print(self.fpr_array)
-
 
         
     
     def plot(self):
-        roc_auc = metrics.auc(self.fpr_array, self.tpr_array)
+        print("EN DESARROLLO")
+        """roc_auc = metrics.auc(self.fpr_array, self.tpr_array)
         plt.figure()
         plt.plot(self.fpr_array, self.tpr_array, label='ROC curve (area = %0.2f)' % roc_auc)
         plt.plot([0, 1], [0, 1], 'k--')
@@ -97,4 +103,4 @@ class MatrizConfusion():
         plt.ylabel('True Positive Rate')
         plt.title('Receiver operating characteristic example')
         plt.legend(loc="lower right")
-        plt.show()
+        plt.show()"""

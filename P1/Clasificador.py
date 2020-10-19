@@ -47,7 +47,7 @@ class Clasificador:
 
   """Entendemos que clasificador se refiere a Naive-Bayes o Knn (el nombre)"""
 
-  def validacion(self,particionado,dataset,seed=None):
+  def validacion(self,particionado,dataset,laplace=False,seed=None):
     # Creamos las particiones siguiendo la estrategia llamando a particionado.creaParticiones
     # - Para validacion cruzada: en el bucle hasta nv entrenamos el clasificador con la particion de train i
     # y obtenemos el error en la particion de test i
@@ -70,7 +70,7 @@ class Clasificador:
         datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest)
 
         # LLamamos a la funcion de entrenamiento
-        entrenamiento = self.entrenamiento(datos_tabla_train,dataset)
+        entrenamiento = self.entrenamiento(datos_tabla_train,dataset,laplace)
         probabilidad_clase = entrenamiento[0] # Probabilidad a Priori de las hipotesis
         analisis_atributos = entrenamiento[1] # Tablas de los atributos
 
@@ -93,7 +93,7 @@ class ClasificadorNaiveBayes(Clasificador):
   def __init__(self):
     self.aux = 0
 
-  def entrenamiento(self,datostrain,datostotales):
+  def entrenamiento(self,datostrain,datostotales,laplace=False):
     
     #Lista probabilidades a priori
     num_registros = len(datostrain)
@@ -151,8 +151,9 @@ class ClasificadorNaiveBayes(Clasificador):
 
 
         #Laplace
-        if(np.count_nonzero(matriz_atributo) != len(valores_clases)*len(valores_posibles)): #No hay ceros
-          matriz_atributo = matriz_atributo + 1
+        if(laplace == True):
+          if(np.count_nonzero(matriz_atributo) != len(valores_clases)*len(valores_posibles)): #No hay ceros
+            matriz_atributo = matriz_atributo + 1
         
         analisis_atributos[nombre_atributo] = matriz_atributo
                 
