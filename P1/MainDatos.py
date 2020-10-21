@@ -17,7 +17,7 @@ if __name__ == "__main__":
     fileName = "ConjuntosDatos/tic-tac-toe.data"
     datos_tic = Datos(fileName)
     
-    # Probamos con 20 porciento y 10 iteraciones (Validacion Simple)
+    # Probamos con 75 porciento y 10 iteraciones (Validacion Simple)
     validacion_simple_tic = ValidacionSimple(75,10)
     aux_simple_tic = validacion_simple_tic.creaParticiones(datos_tic)
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     fileName = "ConjuntosDatos/german.data"
     datos_ger = Datos(fileName)
     
-    # Probamos con 20 porciento y 10 iteraciones (Validacion Simple)
+    # Probamos con 75 porciento y 10 iteraciones (Validacion Simple)
     validacion_simple_ger = ValidacionSimple(75,10)
     aux_simple_ger = validacion_simple_ger.creaParticiones(datos_ger)
 
@@ -79,4 +79,16 @@ if __name__ == "__main__":
 
     # Calculamos la media de las tasas de val. simple y val. cruzada para la matriz de confusion media
     mx1 = MatrizConfusion()
-    mx1.matrix_media(media_tp1, media_tp2, media_fp1, media_fp2, media_tn1, media_tn2, media_fn1, media_fn2)
+
+    # TIC-TAC-TOE
+    print("\nTic-Tac-Toe")
+    tpr, fpr = mx1.matrix_media(media_tp1, media_tp2, media_fp1, media_fp2, 
+                    media_tn1, media_tn2, media_fn1, media_fn2)
+    mx1.plot(tpr, fpr, "tic-tac-toe")
+
+    # GERMAN
+    print("\nGerman")
+
+    tpr, fpr = mx1.matrix_media(media_tp3, media_tp4, media_fp3, media_fp4, 
+                    media_tn3, media_tn4, media_fn3, media_fn4)
+    mx1.plot(tpr, fpr, "german")

@@ -97,26 +97,25 @@ class MatrizConfusion():
 
         self.print_matrix(tp_media, fp_media, tn_media, fn_media)
 
-        tpr = tp_media / (tp1 + fn1)
-        fpr = fp_media / (fp1 + tn1)
+        tpr = tp_media / (tp_media + fn_media)
+        fpr = fp_media / (fp_media + tn_media)
 
         return tpr, fpr
 
     def print_matrix(self, tp, fp, tn, fn):
-        print("Matriz Confusion          Real")
-        print("           |         " + str(round(tp, 3)) + "  " + str(round(fp, 3)))
-        print(" Estimado  |         " + str(round(fn, 3)) + "  " + str(round(tn, 3)))
+        print("Matriz Confusion        Real")
+        print("           |   1    " + str(round(tp, 3)) + "  " + str(round(fp, 3)))
+        print(" Estimado  |   0    " + str(round(fn, 3)) + "  " + str(round(tn, 3)))
 
-    def plot(self):
-        print("EN DESARROLLO")
-        """roc_auc = metrics.auc(self.fpr_array, self.tpr_array)
+    def plot(self, tpr, fpr, dataset_name):
+        
         plt.figure()
-        plt.plot(self.fpr_array, self.tpr_array, label='ROC curve (area = %0.2f)' % roc_auc)
-        plt.plot([0, 1], [0, 1], 'k--')
+        plt.plot([0, 1], [0, 1], 'b--')
         plt.xlim([0.0, 1.0])
-        plt.ylim([0.0, 1.05])
+        plt.ylim([0.0, 1.0])
+        plt.plot(fpr, tpr, 'g+')
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
-        plt.title('Receiver operating characteristic example')
-        plt.legend(loc="lower right")
-        plt.show()"""
+        plt.title('Espacio ROC de ' + dataset_name)
+        plt.legend(['Normal', 'NB'], loc="lower right")
+        plt.show()

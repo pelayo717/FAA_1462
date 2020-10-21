@@ -38,12 +38,11 @@ class Clasificador:
     fp = 0.0
     aciertos = 0
 
-    # La clase que tomaremos como "positiva" será la primera que se haya predicho
-    positive_class = pred[0]
+    # La clase que tomaremos como "positiva" es la 1
 
     totales = len(datostest)
     for i in range(totales):
-      if pred[i] == positive_class:
+      if pred[i] == 1:
         if datostest[i][-1] == pred[i]:
           aciertos += 1
           tp += 1
@@ -93,9 +92,7 @@ class Clasificador:
         datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest)
 
         # LLamamos a la funcion de entrenamiento
-        entrenamiento = self.entrenamiento(datos_tabla_train,dataset,laplace)
-        probabilidad_clase = entrenamiento[0] # Probabilidad a Priori de las hipotesis
-        analisis_atributos = entrenamiento[1] # Tablas de los atributos
+        probabilidad_clase, analisis_atributos = self.entrenamiento(datos_tabla_train,dataset,laplace)
 
         # Llamamos a la funcion de clasificacion
         predicciones = self.clasifica(datos_tabla_test, dataset, analisis_atributos, probabilidad_clase)
@@ -263,7 +260,7 @@ class ClasificadorNaiveBayes(Clasificador):
               varianza = 0.000001 # Convertimos la varianza en 10^-6
             
             # Calculamos la verosimilitud de la clase
-            verosimilitud_clase = 1 / (math.sqrt(2 * math.pi * varianza)) * math.exp( - pow(valor_atributo - media, 2) / 2*varianza)
+            verosimilitud_clase = 1 / (math.sqrt(2 * math.pi * varianza)) * math.exp( - pow(valor_atributo - media, 2) / (2*varianza))
 
           # Multiplicamos las probabilidades P(D=x|H=k)  
           verosimilitudes *= verosimilitud_clase 
