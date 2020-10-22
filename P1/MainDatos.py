@@ -25,11 +25,11 @@ if __name__ == "__main__":
     validacion_cruzada_tic = ValidacionCruzada(10)
     aux_cruzada_tic = validacion_cruzada_tic.creaParticiones(datos_tic)
 
-    Clasificador_tic = ClasificadorNaiveBayes()
-    media_error1, media_tp1, media_fp1, media_tn1, media_fn1 = Clasificador_tic.validacion(validacion_simple_tic,datos_tic,True)
+    Clasificador = ClasificadorNaiveBayes()
+    media_error1, media_tp1, media_fp1, media_tn1, media_fn1 = Clasificador.validacion(validacion_simple_tic,datos_tic,True)
     print("Error medio Simple Tic-Tac-Toe.data: " + str(media_error1))
 
-    media_error2, media_tp2, media_fp2, media_tn2, media_fn2 = Clasificador_tic.validacion(validacion_cruzada_tic,datos_tic,True)
+    media_error2, media_tp2, media_fp2, media_tn2, media_fn2 = Clasificador.validacion(validacion_cruzada_tic,datos_tic,True)
     print("Error medio Cruzada Tic-Tac-Toe.data: " + str(media_error2))
 
     ############################## GERMAN DATA ###########################################
@@ -45,11 +45,10 @@ if __name__ == "__main__":
     validacion_cruzada_ger = ValidacionCruzada(10)
     aux_cruzada_ger = validacion_cruzada_ger.creaParticiones(datos_ger)
 
-    Clasificador_ger = ClasificadorNaiveBayes()
-    media_error3, media_tp3, media_fp3, media_tn3, media_fn3 = Clasificador_ger.validacion(validacion_simple_ger,datos_ger,True)
+    media_error3, media_tp3, media_fp3, media_tn3, media_fn3 = Clasificador.validacion(validacion_simple_ger,datos_ger,True)
     print("Error medio Simple German.data: " + str(media_error3))
 
-    media_error4, media_tp4, media_fp4, media_tn4, media_fn4 = Clasificador_ger.validacion(validacion_cruzada_ger,datos_ger,True)
+    media_error4, media_tp4, media_fp4, media_tn4, media_fn4 = Clasificador.validacion(validacion_cruzada_ger,datos_ger,True)
     print("Error medio Cruzada German.data: " + str(media_error4))
 
 
@@ -84,11 +83,13 @@ if __name__ == "__main__":
     print("\nTic-Tac-Toe")
     tpr, fpr = mx1.matrix_media(media_tp1, media_tp2, media_fp1, media_fp2, 
                     media_tn1, media_tn2, media_fn1, media_fn2)
-    mx1.plot(tpr, fpr, "tic-tac-toe")
+    plot_points = [[fpr, tpr, 'NB']]
+    mx1.plot(plot_points, "tic-tac-toe")
 
     # GERMAN
     print("\nGerman")
 
     tpr, fpr = mx1.matrix_media(media_tp3, media_tp4, media_fp3, media_fp4, 
                     media_tn3, media_tn4, media_fn3, media_fn4)
-    mx1.plot(tpr, fpr, "german")
+    plot_points = [[fpr, tpr, 'NB']]
+    mx1.plot(plot_points, "german")

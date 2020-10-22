@@ -107,15 +107,34 @@ class MatrizConfusion():
         print("           |   1    " + str(round(tp, 3)) + "  " + str(round(fp, 3)))
         print(" Estimado  |   0    " + str(round(fn, 3)) + "  " + str(round(tn, 3)))
 
-    def plot(self, tpr, fpr, dataset_name):
+    def plot(self, point_list, dataset_name):
         
+        # Colores de ploteo para los diferentes puntos
+        plot_colors = ['g', 'r', 'c', 'm', 'y', 'k', 'b']
+
         plt.figure()
+        # Dibujamos la diagonal
         plt.plot([0, 1], [0, 1], 'b--')
+        # Limitamos la escala a [0, 1]
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.0])
-        plt.plot(fpr, tpr, 'g+')
+
+        point_names = ["Normal"]
+
+        # Ploteamos todos los puntos de la lista
+        for i in range(len(point_list)):
+            if i >= (len(plot_colors)):
+                print("Demasiados puntos para plotear.")
+                exit()
+            # ftr, tpr
+            plt.plot(point_list[i][0], point_list[i][1], plot_colors[i] + '+')
+            point_names.append(point_list[i][2])
+
+        # Añadimos las etiquetas de los ejes
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
+        # Nombre de la grafica
         plt.title('Espacio ROC de ' + dataset_name)
-        plt.legend(['Normal', 'NB'], loc="lower right")
+        # Leyenda
+        plt.legend(point_names, loc="lower right")
         plt.show()
