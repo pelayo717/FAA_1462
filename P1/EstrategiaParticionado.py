@@ -118,6 +118,8 @@ class ValidacionCruzada(EstrategiaParticionado):
       aux_bloque = []
 
       # Rellenamos un bloque con el numero de indices que le corresponde 
+
+
       for j in range(numDatosPorBloques):
 
         # Mientras halla datos en la lista, vamos insertando en cada bloque 
@@ -145,7 +147,7 @@ class ValidacionCruzada(EstrategiaParticionado):
       # Rellenamos la particion con los bloques train y el test
       for j in range(len(bloques)):
         # Bloque de test
-        if(j==i):
+        if(j==i): #No es igualar, es incluir, si igualas, sobreescribes los otros XD
           particion.indicesTest = bloques[j][:]
         else: # Resto, bloques de train
           particion.indicesTrain = bloques[j][:]

@@ -130,7 +130,7 @@ class MatrizConfusion():
             plt.plot(point_list[i][0], point_list[i][1], plot_colors[i] + '+')
             point_names.append(point_list[i][2])
 
-        # Añadimos las etiquetas de los ejes
+        # Aniadimos las etiquetas de los ejes
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
         # Nombre de la grafica

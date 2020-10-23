@@ -22,10 +22,10 @@ if __name__ == "__main__":
     aux_simple_tic = validacion_simple_tic.creaParticiones(datos_tic)
 
     # Probamos con 10 k-iteraciones
-    validacion_cruzada_tic = ValidacionCruzada(10)
+    validacion_cruzada_tic = ValidacionCruzada(6)
     aux_cruzada_tic = validacion_cruzada_tic.creaParticiones(datos_tic)
 
-    Clasificador = ClasificadorNaiveBayes()
+    """Clasificador = ClasificadorNaiveBayes()
     media_error1, media_tp1, media_fp1, media_tn1, media_fn1 = Clasificador.validacion(validacion_simple_tic,datos_tic,True)
     print("Error medio Simple Tic-Tac-Toe.data: " + str(media_error1))
 
@@ -92,4 +92,4 @@ if __name__ == "__main__":
     tpr, fpr = mx1.matrix_media(media_tp3, media_tp4, media_fp3, media_fp4, 
                     media_tn3, media_tn4, media_fn3, media_fn4)
     plot_points = [[fpr, tpr, 'NB']]
-    mx1.plot(plot_points, "german")
+    mx1.plot(plot_points, "german")"""
