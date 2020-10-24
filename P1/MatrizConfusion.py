@@ -85,10 +85,10 @@ class MatrizConfusion():
 
         print(self.fpr) #eje X
         print(self.tnr)
-        #self.fpr_array.append(self.tnr)
         self.fpr_array.append(self.fpr)
         print(self.fpr_array)
 
+    # Calcula la media de los aciertos y fallos del modelo y devuelve la tpr y la fpr
     def matrix_media(self, tp1, tp2, fp1, fp2, tn1, tn2, fn1, fn2):
         tp_media = (tp1 + tp2) / 2
         fp_media = (fp1 + fp2) / 2
@@ -102,6 +102,7 @@ class MatrizConfusion():
 
         return tpr, fpr
 
+    # Imprime la matriz de confusion
     def print_matrix(self, tp, fp, tn, fn):
         print("Matriz Confusion        Real")
         print("           |   1    " + str(round(tp, 3)) + "  " + str(round(fp, 3)))

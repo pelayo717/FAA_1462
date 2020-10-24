@@ -18,62 +18,39 @@ import pandas as pd
 
 class Verificador:
 
-    #Dbemos poder distinguir entre si es Gaussian o Multidimensional
+    #Debemos poder distinguir entre si es Gaussian o Multidimensional
     # Clase abstracta
     __metaclass__ = ABCMeta
 
-    def preprocesado_Normal(self,filename): #LISTO A FALTA DE PRUEBA
+    def preprocesado_Normal(self,filename):
         #Recuperamos CSV
         X = pd.read_csv(filename)
 
-        #Mostramos para garantizar el archivo
-        """print(X.shape)
-        print(X.head(3))"""
-        
         #Preprocesado de datos a etiquetas 
         le = LabelEncoder()
         X = X.apply(le.fit_transform)
-
-        #Mostramos para garantizar el etiquetado
-        """print(X.head(3))"""
 
         #Convertimos a array
         X_1 = X.to_numpy()
 
-        #Mostramos con la nueva configuracion
-        """print(X_1.shape)
-        print(X_1)"""
-
         return X_1
 
-    def preprocesado_OneHot(self,filename): #LISTO A FALTA DE PRUEBA
+    def preprocesado_OneHot(self,filename):
         #Recuperamos CSV
         X = pd.read_csv(filename)
-
-        #Mostramos para garantizar el archivo
-        """print(X.shape)
-        print(X.head(3))"""
 
         #Preprocesado de datos a etiquetas 
         le = LabelEncoder()
         X = X.apply(le.fit_transform)
 
-        #Mostramos para garantizar el etiquetado
-        """print(X.head(3))"""
-
         #Declaramos preprocesado
         enc = OneHotEncoder(handle_unknown='ignore')
 
-        #entrenamos encoder
+        #Entrenamos encoder
         enc.fit(X)
-        """print(enc.categories_)"""
 
         #Convertimos en tabla
         X_1 = enc.transform(X).toarray()
-
-        #Mostramos con la nueva configuracion
-        """print(X_1.shape)
-        print(X_1)"""
 
         return X_1
 
@@ -107,8 +84,10 @@ class Verificador_GaussianNB(Verificador):
     real_pred = None
 
 
-    def __init__(self,prepro,tipo_validacion,porcentaje,folds,archivo):
+    def __init__(self):
         self.gnb = GaussianNB()
+
+    def clasificate(self,prepro,tipo_validacion,porcentaje,folds,archivo):
         #Hacemos un preprocesado
         if(prepro == True):
             self.datos = self.preprocesado_OneHot(archivo)
@@ -127,17 +106,12 @@ class Verificador_GaussianNB(Verificador):
             self.pred = self.gnb.predict(X_test)
             self.real_pred = Y_test
             fallos = (Y_test != self.pred).sum()
-            print("\tVerificador GaussianNB ==> Error medio Simple (%f) en archivo %s" % (float(fallos)/float(len(self.pred)),archivo))
             return (float(fallos)/float(len(self.pred)))
         elif(tipo_validacion == 2):
             acierto_carpetas, self.pred = self.validacion_Cruzada(self.gnb,X,Y,folds)
             self.real_pred = Y
             fallos = (Y != self.pred).sum()
-            print("\tVerificador GaussianNB ==> Error medio Cruzado (%f) en archivo %s" % (float(fallos)/float(len(self.pred)),archivo))
-            #print(acierto_carpetas)
             return (float(fallos)/float(len(self.pred)))
-
-
 
 
 class Verificador_Multinominal(Verificador):
@@ -147,11 +121,13 @@ class Verificador_Multinominal(Verificador):
     pred = None
     real_pred = None
 
-    def __init__(self,prepro,tipo_validacion,porcentaje,folds,archivo,alpha=1.0,fit_prior=True):
+    def __init__(self, alpha=1.0, fit_prior=True):
         self.clf = MultinomialNB(alpha=alpha,fit_prior=fit_prior)
+
+    def clasificate(self, prepro, tipo_validacion, porcentaje, folds, archivo):
         if(prepro == True):
             self.datos = self.preprocesado_OneHot(archivo)
-        else: #mantenmos los datos sino
+        else: #mantenmos los datos si no
             self.datos = self.preprocesado_Normal(archivo)
 
         #EXTRACCION Y DE X
@@ -166,12 +142,9 @@ class Verificador_Multinominal(Verificador):
             self.pred = self.clf.predict(X_test)
             self.real_pred = Y_test
             fallos = (Y_test != self.pred).sum()
-            print("\tVerificador MultinominalNB ==> Error medio Simple (%f) en archivo %s" % (float(fallos)/float(len(self.pred)),archivo))
-            return (float(fallos)/float(len(self.pred)))
+            return float(fallos)/float(len(self.pred))
         elif(tipo_validacion == 2):
             acierto_carpetas, self.pred = self.validacion_Cruzada(self.clf,X,Y,folds)
             self.real_pred = Y
             fallos = (Y != self.pred).sum()
-            print("\tVerificador MultinominalNB ==> Error medio Cruzado (%f) en archivo %s" % (float(fallos)/float(len(self.pred)),archivo))
-            #print(acierto_carpetas)
             return (float(fallos)/float(len(self.pred)))

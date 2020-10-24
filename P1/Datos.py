@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import pandas as pd
 import numpy as np
 import string
@@ -12,7 +10,6 @@ class Datos:
     diccionario = None          # Diccionario con los pares clave-valor de las conversiones de atributos nominales
     cantidadDatos = None        # Entero que contiene el numero de filas del dataset
 
-    # TODO: procesar el fichero para asignar correctamente las variables nominalAtributos, datos y diccionario
     def __init__(self, nombreFichero):
 
         # Leemos del fichero csv los datos 
@@ -117,10 +114,10 @@ class Datos:
             columnaAtributos = np.array([columnaAtributos]).transpose()
             self.datos = np.append(self.datos, columnaAtributos, axis=1)
 
-    # TODO: implementar en la practica 1
+    # Devuelve una lista con los valores del dataset
     def extraeDatos(self, idx):
-        datos_tabla=[]
-        num_indices=len(idx)
+        datos_tabla=[]          # Lista en la que se devolveran los ejemplos del dataset
+        num_indices=len(idx)    # Numero de ejemplos del dataset
         for i in range(num_indices):
             datos_tabla.append(self.datos[idx[i]])
         return datos_tabla

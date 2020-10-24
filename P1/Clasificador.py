@@ -1,12 +1,9 @@
-#!/usr/bin/python
-
 from abc import ABCMeta,abstractmethod
 from EstrategiaParticionado import ValidacionCruzada,ValidacionSimple
 import numpy as np
 import pandas as pd
 import math
 import collections
-#from tabulate import tabulate
 
 class Clasificador:
   
@@ -15,7 +12,6 @@ class Clasificador:
   
   # Metodos abstractos que se implementan en casa clasificador concreto
   @abstractmethod
-  # TODO: esta funcion debe ser implementada en cada clasificador concreto
   # datosTrain: matriz numpy con los datos de entrenamiento
   # atributosDiscretos: array bool con la indicatriz de los atributos nominales
   # diccionario: array de diccionarios de la estructura Datos utilizados para la codificacion de variables discretas
@@ -24,7 +20,6 @@ class Clasificador:
   
   
   @abstractmethod
-  # TODO: esta funcion debe ser implementada en cada clasificador concreto
   # devuelve un numpy array con las predicciones
   def clasifica(self, datostest, datostotales, tabla_clases, probabilidad_clase):
     pass
@@ -62,9 +57,6 @@ class Clasificador:
     
     
   # Realiza una clasificacion utilizando una estrategia de particionado determinada
-
-  """Entendemos que clasificador se refiere a Naive-Bayes o Knn (el nombre)"""
-
   def validacion(self,particionado,dataset,laplace=False,seed=None):
     # Creamos las particiones siguiendo la estrategia llamando a particionado.creaParticiones
     # - Para validacion cruzada: en el bucle hasta nv entrenamos el clasificador con la particion de train i
@@ -72,6 +64,7 @@ class Clasificador:
     # - Para validacion simple (hold-out): entrenamos el clasificador con la particion de train
     # y obtenemos el error en la particion test. Otra opcion es repetir la 
     # validacion simple un numero especificado de veces, obteniendo en cada una un error. Finalmente se calculara la media.
+    
     if(isinstance(self, ClasificadorNaiveBayes) == True):
       datos_tabla_train = []
       datos_tabla_test = []
@@ -109,6 +102,7 @@ class Clasificador:
         media_tn += tn
         media_fn += fn
 
+      # Claculamos las medias 
       media_error = media_error / len(lista_particiones)
       media_tp =  media_tp / len(lista_particiones)
       media_fp =  media_fp / len(lista_particiones)

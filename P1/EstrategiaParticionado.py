@@ -16,12 +16,12 @@ class EstrategiaParticionado:
   # Clase abstracta
   __metaclass__ = ABCMeta
   
-  # Atributos: deben rellenarse adecuadamente para cada estrategia concreta. Se pasan en el constructor 
+  # Atributos: deben rellenarse adecuadamente para cada estrategia concreta.
+  #  Se pasan en el constructor 
   
   error = None        # Porcentaje de error del modelo
 
   @abstractmethod
-  # TODO: esta funcion deben ser implementadas en cada estrategia concreta  
   def creaParticiones(self,datos,seed=None):
     pass
   
@@ -40,7 +40,6 @@ class ValidacionSimple(EstrategiaParticionado):
   
   # Crea particiones segun el metodo tradicional de division de los datos segun el porcentaje deseado y el numero de ejecuciones deseado
   # Devuelve una lista de particiones (clase Particion)
-  # TODO: implementar
   def creaParticiones(self, datos, seed=None):
     # Control de errores por si el parametro seed es 'None'
     if seed is None:
@@ -91,7 +90,6 @@ class ValidacionCruzada(EstrategiaParticionado):
   # Crea particiones segun el metodo de validacion cruzada.
   # El conjunto de entrenamiento se crea con las nfolds-1 particiones y el de test con la particion restante
   # Esta funcion devuelve una lista de particiones (clase Particion)
-  # TODO: implementar
   def creaParticiones(self,datos,seed=None):
 
     # Control de errores por si el parametro seed es 'None'
