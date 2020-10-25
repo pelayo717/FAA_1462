@@ -72,6 +72,9 @@ class Datos:
                 # De ser valores enteros/reales creamos un diccionario vacio
                 self.diccionario[self.atributos[h]] = {}
                 
+                # En caso de ser la ultima columna, y de tratarse de un atributo entero
+                # obtamos por asignar como clave del diccionario el mismo valor
+                # pero como un string para facilitar el trabajo futuro
                 if(h == cantidadAtributos-1):
                     
                     lista_aux_class=[]
@@ -115,6 +118,7 @@ class Datos:
             self.datos = np.append(self.datos, columnaAtributos, axis=1)
 
     # Devuelve una lista con los valores del dataset
+    # Usa los indices para saber a que datos debe acceder
     def extraeDatos(self, idx):
         datos_tabla=[]          # Lista en la que se devolveran los ejemplos del dataset
         num_indices=len(idx)    # Numero de ejemplos del dataset

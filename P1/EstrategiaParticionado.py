@@ -16,9 +16,6 @@ class EstrategiaParticionado:
   # Clase abstracta
   __metaclass__ = ABCMeta
   
-  # Atributos: deben rellenarse adecuadamente para cada estrategia concreta.
-  #  Se pasan en el constructor 
-  
   error = None        # Porcentaje de error del modelo
 
   @abstractmethod
@@ -41,6 +38,7 @@ class ValidacionSimple(EstrategiaParticionado):
   # Crea particiones segun el metodo tradicional de division de los datos segun el porcentaje deseado y el numero de ejecuciones deseado
   # Devuelve una lista de particiones (clase Particion)
   def creaParticiones(self, datos, seed=None):
+    
     # Control de errores por si el parametro seed es 'None'
     if seed is None:
       seed = 10
@@ -53,19 +51,18 @@ class ValidacionSimple(EstrategiaParticionado):
     numTest = int(datos.cantidadDatos * (1 - ( float(self.porcentaje / float(100)))))
 
     # Creamos una particion nueva por cada ejecucion y la aniadimos a la lista
-    for i in range( self.numEjecuciones ):
+    for i in range(self.numEjecuciones):
       particion = Particion()
       
-      # Metemos todos los indices posibles en train. Generamos indices aleatorios y los metemos en test sacandolos de train.
-      # De esta forma podemos comprobar si ya se han repetido y los restantes de train ya se encuentran en test.
+      # Metemos todos los indices posibles en train. Generamos indices aleatorios y los metemos en test sacandolos de train
+      # De esta forma podemos comprobar si ya se han repetido y los restantes de train ya se encuentran en test
       particion.indicesTrain = list(range(0, datos.cantidadDatos))
 
       # Insertamos todos los indices generados aleatoriamente en Test y los eliminamos de Train
-      for j in range( numTest ):
+      for j in range(numTest):
         
         encontrado = False        # Flag que garantiza que el indice generado no este repetido
-        while encontrado is False:
-
+        while encontrado is False: # De no haber sido extraido previamente, llevamos a cabo la extraccion y la insercion de cada lista
           indice = random.randint(0, (datos.cantidadDatos - 1))
           # Comprobamos si se encuentra todavia en Train
           if indice in particion.indicesTrain:
@@ -73,6 +70,7 @@ class ValidacionSimple(EstrategiaParticionado):
             particion.indicesTrain.remove(indice)
             encontrado = True
       
+      # Aniadimos la particion creada, al listado de particiones a retornar
       listaParticiones.append(particion)
       particion = None
 
@@ -102,8 +100,9 @@ class ValidacionCruzada(EstrategiaParticionado):
 
     # Numero total de datos que encontramos en el dataset
     numDatos = datos.cantidadDatos
+
     # Redondeamos el numero de valores por bloque hacia el techo
-    # Por tanto, en el caso de que el reparto de datos no sea un numero clavado, 
+    # Por tanto, en el caso de que el reparto de datos no sea un numero exacto, 
     # habra un bloque que presente menos datos que los demas
     numDatosPorBloques = int(math.ceil(float(numDatos)/float(self.numParticiones)))
 
@@ -116,43 +115,42 @@ class ValidacionCruzada(EstrategiaParticionado):
       aux_bloque = []
 
       # Rellenamos un bloque con el numero de indices que le corresponde 
-
-
       for j in range(numDatosPorBloques):
 
         # Mientras halla datos en la lista, vamos insertando en cada bloque 
         if (len(lista_datos) > 0):
           encontrado = False        # Flag que garantiza que el indice generado no este repetido
-          while encontrado is False:
+
+          while encontrado is False: # Comenzamos la extraccion de datos de la lista general
             indice = random.randint(0, (datos.cantidadDatos - 1)) # Escogemos aleatoriamente el indice de los datos totales
             if indice in lista_datos: # Comprobamos si se encuentra todavia en lista_datos
-              aux_bloque.append(indice)
-              lista_datos.remove(indice)
+              aux_bloque.append(indice) # De ser asi, se extrae de la lista general, y se incluye en el bloque concreto
+              lista_datos.remove(indice) # Sino, se seguiran buscando la cantidad de datos necesarios hasta completar el bloque
               encontrado = True
         else: # Condicion que se da cuando seguimos necesitando numeros para rellenar el bloque pero no quedan mas en la lista 
-          break
+          break #Paramos la ejecucion y damos por acabado los repartos
 
-      bloques.append(aux_bloque)
+      bloques.append(aux_bloque) #Aniadimos el bloque a la lista a retornar
       aux_bloque = None
 
     #====================== ASIGNACION DE BLOQUES ===================#
 
     # Debemos realizar k iteraciones, y por cada iteracion debemos dividir los datos en k subconjuntos.
-    # De estos subconjuntos 1 los usaremos de prueba mientras el resto seran de entrenamiento
+    # De estos subconjuntos 1, los usaremos de prueba mientras el resto seran de entrenamiento
     for i in range(self.numParticiones):
       particion = Particion()
 
       # Rellenamos la particion con los bloques train y el test
       for j in range(len(bloques)):
         # Bloque de test
-        if(j==i): #No es igualar, es incluir, si igualas, sobreescribes los otros XD
+        if(j==i): # La idea es extraer de cada bloque los indices que alberga, al ser test, solo obtendremos de un bloque
           for k in range(len(bloques[j])):
             particion.indicesTest.append(bloques[j][k])
-        else: # Resto, bloques de train
+        else: # Pero los de train, se juntaran en el array indicesTrain, de la particion concreta
           for k in range(len(bloques[j])):
             particion.indicesTrain.append(bloques[j][k])
 
-      listaParticiones.append(particion)
+      listaParticiones.append(particion) # Aniadimos la particion concreta y continuamos hasta obtener todas las requeridas
       particion=None
     
     return listaParticiones
