@@ -72,7 +72,7 @@ class Clasificador_KNN:
         for j in range(num_atributos): #hacemos las diferencias al cuadrado
           valor_total += math.fabs(datos.datos[indice][j] - datos.datos[i][j])
         #hallamos la raiz de aux y guardamos el valor    
-        array_info[0] = math.sqrt(valor_total)
+        array_info[0] = valor_total
         #tb guardamos el indice al que corresponde
         array_info[1] = aux
         distancias[aux] = array_info
