@@ -1,18 +1,17 @@
 from Datos import Datos
-from Clasificador_KNN import Clasificador_KNN
-from Normalizar import Normanlizar
+from EstrategiaParticionado import ValidacionSimple
+from Clasificador import *
+from Distancias import *
 
 if __name__ == "__main__":
-
-    ############################## TIC TAC TOE ###########################################
 
     fileName = "ConjuntosDatos/pima-indians-diabetes.data"
     datos = Datos(fileName)
 
-    aux = Normanlizar()
-    aux.calcularMediasDesv(datos.datos,datos.nominalAtributos)
-    aux.normalizarDatos(datos.datos,datos.nominalAtributos)
+    validacion_simple = ValidacionSimple(75,10)
+    aux_simple = validacion_simple.creaParticiones(datos)
 
-    cl = Clasificador_KNN(3)
-    cl.Ecuclidea(datos,10)
-    cl.Manhattan(datos,10)
+    knn = ClasificadorVecinosProximos(3, "Euclidea")
+
+    knn.entrenamiento(datos)
+    print(knn.clasifica(datos, aux_simple[0].indicesTrain, aux_simple[0].indicesTest))

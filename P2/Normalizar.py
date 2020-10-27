@@ -1,6 +1,6 @@
 import numpy as np
 
-class Normanlizar():
+class Normalizar():
     
     medias = None
     desviaciones = None
