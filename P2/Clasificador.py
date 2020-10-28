@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import math
 import collections
+import random
 from Normalizar import *
 from Distancias import *
 
@@ -144,6 +145,38 @@ class Clasificador:
         media_fn += fn
 
 
+    ######################################## Regresion Logistica ##########################################
+
+    if(isinstance(self, ClasficadorRegresionLogistica) == True):
+      datos_tabla_train = []
+      datos_tabla_test = []
+      lista_particiones = particionado.creaParticiones(dataset)
+      media_error = 0.0
+      media_tp = 0.0
+      media_fp = 0.0
+      media_tn = 0.0
+      media_fn = 0.0
+      
+        # Recuperaremos tantas particiones como iteraciones se hayan indicado
+      for i in range(len(lista_particiones)):
+        
+        # Creamos una tabla auxiliar con los datos de Train
+        datos_tabla_train = dataset.extraeDatos(lista_particiones[i].indicesTrain)
+        
+        # Creamos una tabla auxiliar con los datos de Test
+        datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest)
+
+        # LLamamos a la funcion de entrenamiento
+        frontera_decision = self.entrenamiento(datos_tabla_train)
+
+        # Llamamos a la funcion de clasificacion
+        predicciones = self.clasifica(datos_tabla_test)
+        
+        # Llamamos a la funcion de calculo del error y las tasas
+        tasa_acierto, tp, fp, tn, fn = self.error(datos_tabla_test, predicciones)
+
+        # Sumamos las tasas de fallo para calcular la media posteriormente
+        media_error += (1 - tasa_acierto)
 
     # Calculamos las medias 
     media_error = media_error / len(lista_particiones)
@@ -342,4 +375,85 @@ class ClasificadorVecinosProximos(Clasificador):
       distancias = self.distancia(datos, indice)
       clase = SeleccionKVecinos(datos, distancias, self.k)
       clases_predichas.append(clase)
-    return clases_predichas 
+    return clases_predichas
+
+##############################################################################
+
+class ClasficadorRegresionLogistica(Clasificador):
+
+  tasa_aprendizaje=None
+  epocas=None
+  frontera_decision=None
+
+  # Recordemos que es recomendable que la tasa este entre -0.5 y 0.5
+  def __init__(self,t_aprendizaje=0.2,epocas=10):
+    self.tasa_aprendizaje = t_aprendizaje
+    self.epocas = epocas
+  
+  def incializarFrontera(self):
+    # Inicializamos los valores de la frontera aleatoriamente entre -1 y 1
+    # Plantamos semilla
+    random.seed(0)
+
+    # Entendemos que estamos trabajando con una frontera de 3 variables
+    for i in range(len(self.frontera_decision)):
+      self.frontera_decision[i] = random.uniform(-1,1)
+
+  def entrenamiento(self,datos):
+    # Necesitamos conocer el numero de atributos del dataset para saber cuantas componentes tendra la frontera
+    atributos_vector_X = len(datos[0])-1
+    self.frontera_decision = np.zeros(atributos_vector_X + 1,dtype=float)
+    self.incializarFrontera()
+
+    for i in range(self.epocas):
+      for j in range(len(datos)):
+        # Calculamos el valor para introducir en la sigmoide
+        # Multiplicacion de vectores <w*x>
+        sumatorio = 0
+        for k in range(atributos_vector_X+1): # Todos los atributos y Clase de la fila de datos
+          sumatorio += (float(datos[j][k]) * self.frontera_decision[k])
+
+        # Pasamos por la sigmoide
+        sigmoide = 1/(1+math.exp(-sumatorio))
+        
+        # Hacemos la correccion de frontera
+        # Valor sigmoide - clase
+        parte_auxiliar = (sigmoide - float(datos[j][-1]))*self.tasa_aprendizaje
+
+        # Array axuiliar para guardar vector_X = tasa * (sigmoide-clasificacion) * vector_X
+        vector_X_aux = np.zeros(atributos_vector_X+1,dtype=float)
+
+        for k in range(atributos_vector_X+1):
+          vector_X_aux[k] = float(datos[j][k])*parte_auxiliar
+        
+        # Nuevas "cordenadas" en la frontera de decision
+        for k in range(atributos_vector_X+1):
+          self.frontera_decision[k] = self.frontera_decision[k] - vector_X_aux[k]
+    
+    return self.frontera_decision
+  
+  def clasifica(self,datos):
+    atributos_vector_X = len(datos[0])-1
+    # Creamos un array para almacenar las predicciones
+    predicciones = []
+    # Recorremos todos las filas de datos
+    for i in range(len(datos)):
+        sumatorio = 0 # Sacamos el sumatorio de componentes dek vecotr w por los atributos de la fila
+        for k in range(atributos_vector_X+1): # Todos los atributos y Clase de la fila de datos
+          sumatorio += (float(datos[i][k]) * self.frontera_decision[k])
+
+        # Pasamos por la sigmoide
+        sigmoide = 1/1+math.exp(-sumatorio)
+
+        # Guardamos la prediccion
+        predicciones.append(sigmoide)
+    
+    return predicciones
+
+
+
+          
+
+
+
+  

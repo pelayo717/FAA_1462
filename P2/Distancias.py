@@ -3,7 +3,6 @@ import numpy as np
 from scipy.spatial.distance import mahalanobis
 
 
-
 def Euclidea(datos, indice):
   num_filas = len(datos.datos)
   distancias = np.zeros((num_filas-1,2),dtype=float)
@@ -93,9 +92,10 @@ def SeleccionKVecinos(datos, distancias, k):
   for i in range(k):
     # Sacamos el indice
     indice = int(distancias[i][1])
+    # Guardamos la clasificacion del indice especificado
     clases.append(datos.datos[indice][-1])
 
-    # Cuando nos encontramos en el ultimo vecin a saleccionar
+    # Cuando nos encontramos en el ultimo vecino a saleccionar
     if i == (k-1):
 
       # Comprobamos que no haya empates en cuanto a distancia con los siguientes
@@ -104,12 +104,12 @@ def SeleccionKVecinos(datos, distancias, k):
       distancia_2 = distancias[j][0]
 
       # En caso de haberlos, los seleccionamos tambien como vecinos proximos
-      while( distancia_2 == distancia_1):
+      while(distancia_2 == distancia_1):
         indice = int(distancias[i][1])
         clases.append(datos.datos[indice][-1]) 
         j+= 1 
         distancia_2 = distancias[j][0]
 
-  # Devolvemos la clase que más se repita
+  # Devolvemos la clase que mas se repita
   return max(set(clases), key=clases.count)
 

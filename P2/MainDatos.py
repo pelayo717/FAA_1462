@@ -14,7 +14,7 @@ if __name__ == "__main__":
     datos_wdbc = Datos(fileName)
 
     knn = ClasificadorVecinosProximos(3, Euclidea)
-
+    cl = ClasficadorRegresionLogistica(0.0000001,10)
 
     ############################## Diabetes ##############################
     validacion_simple_diabetes = ValidacionSimple(75,10)
@@ -25,7 +25,9 @@ if __name__ == "__main__":
     
     medias_simples_diabetes = knn.validacion(validacion_simple_diabetes, datos_diabetes)
     medias_cruzadas_diabetes = knn.validacion(validacion_cruzada_diabetes, datos_diabetes)
-
+    
+    #medias_simples_diabetes_rl = cl.validacion(validacion_simple_diabetes, datos_diabetes)
+    #medias_cruzadas_diabetes_rl = cl.validacion(validacion_cruzada_diabetes, datos_diabetes)
 
     ############################## Wdbc ##############################
     validacion_simple_wdbc = ValidacionSimple(75,10)
