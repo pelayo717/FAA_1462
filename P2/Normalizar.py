@@ -22,7 +22,6 @@ class Normalizar():
                     self.desviaciones.append(np.std(aux_numpy))
    
     def  normalizarDatos(self,datos,nominalAtributos):
-        print("Formula normalizacion ==> (valor - media)/desviacion ==> nuevo valor")
         conteo_lista_decimales = 0
         for i in range(len(nominalAtributos)):
             if(nominalAtributos[i] == False): # Enteros o decimales

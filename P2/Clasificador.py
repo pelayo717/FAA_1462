@@ -59,7 +59,7 @@ class Clasificador:
     
     
   # Realiza una clasificacion utilizando una estrategia de particionado determinada
-  def validacion(self,particionado,dataset,laplace=False,seed=None):
+  def validacion(self, particionado, dataset, laplace=False, seed=None):
     # Creamos las particiones siguiendo la estrategia llamando a particionado.creaParticiones
     # - Para validacion cruzada: en el bucle hasta nv entrenamos el clasificador con la particion de train i
     # y obtenemos el error en la particion de test i
@@ -67,6 +67,8 @@ class Clasificador:
     # y obtenemos el error en la particion test. Otra opcion es repetir la 
     # validacion simple un numero especificado de veces, obteniendo en cada una un error. Finalmente se calculara la media.
     
+    ########################################## Naive Bayes ##########################################
+
     if(isinstance(self, ClasificadorNaiveBayes) == True):
       datos_tabla_train = []
       datos_tabla_test = []
@@ -104,14 +106,53 @@ class Clasificador:
         media_tn += tn
         media_fn += fn
 
-      # Claculamos las medias 
-      media_error = media_error / len(lista_particiones)
-      media_tp =  media_tp / len(lista_particiones)
-      media_fp =  media_fp / len(lista_particiones)
-      media_tn =  media_tn / len(lista_particiones)
-      media_fn =  media_fn / len(lista_particiones)
+    ########################################## KNN ##########################################
 
-      return media_error, media_tp, media_fp, media_tn, media_fn
+
+    if(isinstance(self, ClasificadorVecinosProximos) == True):
+      datos_tabla_train = []
+      datos_tabla_test = []
+      lista_particiones = particionado.creaParticiones(dataset)
+      media_error = 0.0
+      media_tp = 0.0
+      media_fp = 0.0
+      media_tn = 0.0
+      media_fn = 0.0
+      
+      # LLamamos a la funcion de entrenamiento para normalizar todos los datos
+      datos = self.entrenamiento(dataset)
+
+      # Recuperaremos tantas particiones como iteraciones se hayan indicado
+      for i in range(len(lista_particiones)):
+        
+        # Llamamos a la funcion de clasificacion
+        predicciones = self.clasifica(datos, lista_particiones[i].indicesTest)
+
+        # Creamos una tabla auxiliar con los datos de Test
+        datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest)
+        
+        # Llamamos a la funcion de calculo del error y las tasas
+        tasa_acierto, tp, fp, tn, fn = self.error(datos_tabla_test, predicciones)
+
+        # Sumamos las tasas de fallo para calcular la media posteriormente
+        media_error += (1 - tasa_acierto)
+
+        # Sumamos las tasas tp, fp, tn y fn
+        media_tp += tp
+        media_fp += fp
+        media_tn += tn
+        media_fn += fn
+
+
+
+    # Calculamos las medias 
+    media_error = media_error / len(lista_particiones)
+    media_tp =  media_tp / len(lista_particiones)
+    media_fp =  media_fp / len(lista_particiones)
+    media_tn =  media_tn / len(lista_particiones)
+    media_fn =  media_fn / len(lista_particiones)
+
+    return media_error, media_tp, media_fp, media_tn, media_fn
 
 ##############################################################################
 
@@ -278,35 +319,27 @@ class ClasificadorVecinosProximos(Clasificador):
   k = None
   distancia = None
 
-  def __init__(self,k=3, distancia="Euclidea"):
+  def __init__(self,k=3, distancia=Euclidea):
     self.k = k
+    self.distancia = distancia
 
-    if(distancia == "Euclidea"): 
-      self.distancia = 1
-    elif(distancia == "Manhattan"): 
-      self.distancia = 2
-    elif(distancia == "Mahalanobis"): 
-      self.distancia = 3
-    else:
-      print("Distancia invalida")
-      exit
+    if(self.distancia != Euclidea and self.distancia != Manhattan
+                and self.distancia != Mahalanobis): 
+      print("Calculo de distancia no permitido.")
+      exit()
+      
 
   def entrenamiento(self, datos):
     aux = Normalizar()
     aux.calcularMediasDesv(datos.datos,datos.nominalAtributos)
     aux.normalizarDatos(datos.datos,datos.nominalAtributos)
+    return datos
   
-  def clasifica(self, datos, indicesTrain, indicesTest):
+  def clasifica(self, datos, indicesTest):
     clases_predichas = []
 
-    for indice in indicesTrain:
-      if self.distancia == 1:
-        distancias = Euclidea(datos, indice)
-      elif self.distancia == 2:
-        distancias = Manhattan(datos, indice)
-      else:
-        distancias = Mahalanobis(datos, indice)
-
+    for indice in indicesTest:
+      distancias = self.distancia(datos, indice)
       clase = SeleccionKVecinos(datos, distancias, self.k)
-      clases_predichas.append([indice, clase])
+      clases_predichas.append(clase)
     return clases_predichas 
