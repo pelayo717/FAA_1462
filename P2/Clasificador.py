@@ -125,13 +125,16 @@ class Clasificador:
 
       # Recuperaremos tantas particiones como iteraciones se hayan indicado
       for i in range(len(lista_particiones)):
-        
-        # Llamamos a la funcion de clasificacion
-        predicciones = self.clasifica(datos, lista_particiones[i].indicesTest)
 
+        # Creamos una tabla auxiliar con los datos de Train
+        datos_tabla_train = dataset.extraeDatos(lista_particiones[i].indicesTrain)
+        
         # Creamos una tabla auxiliar con los datos de Test
         datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest)
         
+        # Llamamos a la funcion de clasificacion
+        predicciones = self.clasifica(datos_tabla_train, datos_tabla_test)
+                
         # Llamamos a la funcion de calculo del error y las tasas
         tasa_acierto, tp, fp, tn, fn = self.error(datos_tabla_test, predicciones)
 
@@ -368,14 +371,10 @@ class ClasificadorVecinosProximos(Clasificador):
     aux.normalizarDatos(datos.datos,datos.nominalAtributos)
     return datos
   
-  def clasifica(self, datos, indicesTest):
-    clases_predichas = []
-
-    for indice in indicesTest:
-      distancias = self.distancia(datos, indice)
-      clase = SeleccionKVecinos(datos, distancias, self.k)
-      clases_predichas.append(clase)
-    return clases_predichas
+  def clasifica(self, datosTrain, datosTest):
+    distancias = self.distancia(datosTrain, datosTest)
+    predicciones = SeleccionKVecinos(datosTrain, distancias, self.k)
+    return predicciones
 
 ##############################################################################
 

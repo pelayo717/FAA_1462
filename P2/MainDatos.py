@@ -13,7 +13,7 @@ if __name__ == "__main__":
     fileName = "ConjuntosDatos/wdbc.data"
     datos_wdbc = Datos(fileName)
 
-    knn = ClasificadorVecinosProximos(3, Euclidea)
+    knn = ClasificadorVecinosProximos(3, Mahalanobis)
     cl = ClasficadorRegresionLogistica(0.0000001,10)
 
     ############################## Diabetes ##############################
