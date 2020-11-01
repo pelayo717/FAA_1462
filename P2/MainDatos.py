@@ -2,6 +2,7 @@ from Datos import Datos
 from EstrategiaParticionado import ValidacionSimple
 from Clasificador import *
 from Distancias import *
+from Verificador import *
 from MatrizConfusion import MatrizConfusion
 from tabulate import tabulate
 
@@ -122,3 +123,44 @@ if __name__ == "__main__":
     
     plot_points = [[fpr, tpr, 'Reg. Log.']]
     mx1.plot(plot_points, "Wdbc")
+
+    #################### VERIFICADORES KNN y REGRESION LOGISTICA ###############
+
+    verificador_knn = Verificados_KVecinos(3,'uniform','euclidean')
+
+
+    diabetes_sin_kn_simple_eu = verificador_knn.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/pima-indians-diabetes.data")
+
+    diabetes_sin_kn_cruzada_eu = verificador_knn.clasificate(prepro=False,tipo_validacion=2,porcentaje=0.75,folds=6,archivo="ConjuntosDatos/pima-indians-diabetes.data")
+
+    wdbc_sin_kn_simple_eu = verificador_knn.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/wdbc.data")
+
+    wdbc_sin_kn_cruzada_eu = verificador_knn.clasificate(prepro=False,tipo_validacion=2,porcentaje=0.75,folds=6,archivo="ConjuntosDatos/wdbc.data")
+
+    
+    verificador_knn = Verificados_KVecinos(3,'uniform','manhattan')
+
+    diabetes_sin_kn_simple_man = verificador_knn.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/pima-indians-diabetes.data")
+
+    diabetes_sin_kn_cruzada_man = verificador_knn.clasificate(prepro=False,tipo_validacion=2,porcentaje=0.75,folds=6,archivo="ConjuntosDatos/pima-indians-diabetes.data")
+
+    wdbc_sin_kn_simple_man = verificador_knn.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/wdbc.data")
+
+    wdbc_sin_kn_cruzada_man = verificador_knn.clasificate(prepro=False,tipo_validacion=2,porcentaje=0.75,folds=6,archivo="ConjuntosDatos/wdbc.data")
+
+    verificador_knn = Verificados_KVecinos(3,'uniform','mahalanobis')
+
+    """diabetes_sin_kn_simple_mah = verificador_knn.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/pima-indians-diabetes.data")
+
+    diabetes_sin_kn_cruzada_mah = verificador_knn.clasificate(prepro=False,tipo_validacion=2,porcentaje=0.75,folds=6,archivo="ConjuntosDatos/pima-indians-diabetes.data")
+
+    wdbc_sin_kn_simple_mah = verificador_knn.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/wdbc.data")
+
+    wdbc_sin_kn_cruzada_mah = verificador_knn.clasificate(prepro=False,tipo_validacion=2,porcentaje=0.75,folds=6,archivo="ConjuntosDatos/wdbc.data")
+"""
+
+    resultados_sk_sin = [[round(diabetes_sin_kn_simple_eu, 3), round(wdbc_sin_kn_simple_eu, 3) , round(diabetes_sin_kn_simple_man,3), round(wdbc_sin_kn_simple_man,3)],  [round(diabetes_sin_kn_cruzada_eu, 3), round(wdbc_sin_kn_cruzada_eu, 3) , round(diabetes_sin_kn_cruzada_man,3), round(wdbc_sin_kn_cruzada_man,3)]]
+
+    print("SKLearn:")
+    print("Sin Preprocesado KNN")
+    print(tabulate(resultados_sk_sin, headers=['Tasa de error', 'Diabetes(Euclidean)', 'Wdbc(Euclidean)','Diabetes(Manhattan)','Wdbc(Manhattan)'], showindex=['Val. Simple', 'Val. Cruzada'], tablefmt='fancy_grid'))

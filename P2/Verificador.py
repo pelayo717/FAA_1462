@@ -4,6 +4,10 @@ from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB,MultinomialNB
 
+#P2
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import DistanceMetric
+
 #Preprocesamiento de datos OneHot
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder
@@ -166,3 +170,45 @@ class Verificador_Multinominal(Verificador):
             # Hallamos el numero de fallos y retornamos
             fallos = (Y != self.pred).sum()
             return (float(fallos)/float(len(self.pred)))
+
+class Verificados_KVecinos(Verificador):
+
+    kn = None
+    datos = None # Datos sin preprocesar
+    pred = None # Predicciones realizadas
+    real_pred = None # Clasificaciones reales
+
+    def __init__(self, nvecinos=3,pesos='uniform',metrica='euclidean'): #,metric_params={'V':}
+        self.kn = KNeighborsClassifier(n_neighbors=nvecinos,weights=pesos,metric=metrica) #Debemos aniadir metric_params para Mahalanobis metric_params={'V':}
+
+    def clasificate(self, prepro, tipo_validacion, porcentaje, folds, archivo):
+        # Hacemos un preprocesado
+        if(prepro == True):
+            self.datos = self.preprocesado_OneHot(archivo)
+        else: # mantenmos los datos si no
+            self.datos = self.preprocesado_Normal(archivo)
+
+        # EXTRACCION Y DE X
+        X,Y=self.separacion(self.datos)
+
+        # Tipo de Validacion
+        if(tipo_validacion == 1):
+            X_train, X_test, Y_train, Y_test = self.validacion_Simple(X,Y,porcentaje)
+            # Entreamos el clasificador
+            self.kn.fit(X_train, Y_train)
+            # Predecimos
+            self.pred = self.kn.predict(X_test)
+            self.real_pred = Y_test
+            # Hallamos el numero de fallos y retornamos
+            fallos = (Y_test != self.pred).sum()
+            return float(fallos)/float(len(self.pred))
+
+        elif(tipo_validacion == 2):
+            # Pasamos el clasificador y una serie de datos a la funcion de validacion cruzada
+            acierto_carpetas, self.pred = self.validacion_Cruzada(self.kn,X,Y,folds)
+            self.real_pred = Y
+            # Hallamos el numero de fallos y retornamos
+            fallos = (Y != self.pred).sum()
+            return (float(fallos)/float(len(self.pred)))
+
+    
