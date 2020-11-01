@@ -14,7 +14,7 @@ if __name__ == "__main__":
     datos_wdbc = Datos(fileName)
 
     knn = ClasificadorVecinosProximos(3, Mahalanobis)
-    cl = ClasficadorRegresionLogistica(0.0000001,10)
+    cl = ClasficadorRegresionLogistica(0.5,20)
 
     ############################## Diabetes ##############################
     validacion_simple_diabetes = ValidacionSimple(75,10)
@@ -23,11 +23,15 @@ if __name__ == "__main__":
     validacion_cruzada_diabetes = ValidacionCruzada(6)
     cruzada_diabetes = validacion_cruzada_diabetes.creaParticiones(datos_diabetes)
     
+    """ El validador de rl estaba despues de knn, pero como en knn normalizas los datos pues regresion
+    logistica esta heredando esa normalizacion que a priori no debe"""
+    medias_simples_diabetes_rl = cl.validacion(validacion_simple_diabetes, datos_diabetes)
+    medias_cruzadas_diabetes_rl = cl.validacion(validacion_cruzada_diabetes, datos_diabetes)
+
     medias_simples_diabetes = knn.validacion(validacion_simple_diabetes, datos_diabetes)
     medias_cruzadas_diabetes = knn.validacion(validacion_cruzada_diabetes, datos_diabetes)
     
-    #medias_simples_diabetes_rl = cl.validacion(validacion_simple_diabetes, datos_diabetes)
-    #medias_cruzadas_diabetes_rl = cl.validacion(validacion_cruzada_diabetes, datos_diabetes)
+    
 
     ############################## Wdbc ##############################
     validacion_simple_wdbc = ValidacionSimple(75,10)
@@ -35,29 +39,38 @@ if __name__ == "__main__":
 
     validacion_cruzada_wdbc = ValidacionCruzada(6)
     cruzada_wdbc = validacion_cruzada_wdbc.creaParticiones(datos_wdbc)
+
+    medias_simples_wdbc_rl = cl.validacion(validacion_simple_wdbc, datos_wdbc)
+    medias_cruzadas_wdbc_rl = cl.validacion(validacion_cruzada_wdbc, datos_wdbc)
     
     medias_simples_wdbc = knn.validacion(validacion_simple_wdbc, datos_wdbc)
     medias_cruzadas_wdbc = knn.validacion(validacion_cruzada_wdbc, datos_wdbc)
 
 
-    # Guardamos resultados de los resultados
+    # Guardamos resultados de los resultados KNN
     resultados_P2 = [[round(medias_simples_diabetes[0], 3), round(medias_simples_wdbc[0], 3)], 
             [round(medias_cruzadas_diabetes[0], 3), round(medias_cruzadas_wdbc[0], 3)]]
 
     # Impresion de las tablas
-    print("Practica 2:")
+    print("Practica 2 KNN:")
     print(tabulate(resultados_P2, headers=['Tasa de error', 'Diabetes', 'Wdbc'], 
         showindex=['Val. Simple', 'Val. Cruzada'], tablefmt='fancy_grid'))
 
 
+    resultados_P2_rl = [[round(medias_simples_diabetes_rl[0], 3), round(medias_simples_wdbc_rl[0], 3)], 
+            [round(medias_cruzadas_diabetes_rl[0], 3), round(medias_cruzadas_wdbc_rl[0], 3)]]
+
+    print("\nPractica 2 Regresion Logistica:")
+    print(tabulate(resultados_P2_rl, headers=['Tasa de error', 'Diabetes', 'Wdbc'], 
+        showindex=['Val. Simple', 'Val. Cruzada'], tablefmt='fancy_grid'))
 
     ############################## MATRIZ CONFUSION ###########################################
 
     # Calculamos la media de las tasas de val. simple y val. cruzada para la matriz de confusion media
     mx1 = MatrizConfusion()
 
-    # TIC-TAC-TOE
-    print("\nDiabetes")
+    # DIABETES
+    print("\nDiabetes KNN")
     tpr, fpr = mx1.matrix_media(medias_simples_diabetes[1], 
         medias_cruzadas_diabetes[1], 
         medias_simples_diabetes[2], 
@@ -70,8 +83,21 @@ if __name__ == "__main__":
     plot_points = [[fpr, tpr, 'KNN']]
     mx1.plot(plot_points, "Diabetes")
 
-    # GERMAN
-    print("\nWdbc")
+    print("\nDiabetes Regresion Logistica")
+    tpr, fpr = mx1.matrix_media(medias_simples_diabetes_rl[1], 
+        medias_cruzadas_diabetes_rl[1], 
+        medias_simples_diabetes_rl[2], 
+        medias_cruzadas_diabetes_rl[2],
+        medias_simples_diabetes_rl[3], 
+        medias_cruzadas_diabetes_rl[3],
+        medias_simples_diabetes_rl[4], 
+        medias_cruzadas_diabetes_rl[4])
+
+    plot_points = [[fpr, tpr, 'Reg. Log.']]
+    mx1.plot(plot_points, "Diabetes")
+
+    # WDBC
+    print("\nWdbc KNN")
     tpr, fpr = mx1.matrix_media(medias_simples_wdbc[1], 
         medias_cruzadas_wdbc[1], 
         medias_simples_wdbc[2], 
@@ -82,4 +108,17 @@ if __name__ == "__main__":
         medias_cruzadas_wdbc[4])
     
     plot_points = [[fpr, tpr, 'KNN']]
+    mx1.plot(plot_points, "Wdbc")
+
+    print("\nWdbc Regresion Logistica")
+    tpr, fpr = mx1.matrix_media(medias_simples_wdbc_rl[1], 
+        medias_cruzadas_wdbc_rl[1], 
+        medias_simples_wdbc_rl[2], 
+        medias_cruzadas_wdbc_rl[2],
+        medias_simples_wdbc_rl[3], 
+        medias_cruzadas_wdbc_rl[3],
+        medias_simples_wdbc_rl[4], 
+        medias_cruzadas_wdbc_rl[4])
+    
+    plot_points = [[fpr, tpr, 'Reg. Log.']]
     mx1.plot(plot_points, "Wdbc")

@@ -4,10 +4,12 @@ class Normalizar():
     
     medias = None
     desviaciones = None
+
     def __init__(self):
 
         self.medias = []
         self.desviaciones = []
+
 
     def calcularMediasDesv(self,datos,nominalAtributos):
         # Miramos todos los atributos de un dataset, para conocer que tipo de atributo es cada uno (Enteros o decimales) o Nominales
@@ -29,3 +31,5 @@ class Normalizar():
                     for j in range(len(datos)): # Para cada valor de la columna, calculamos su nuevo valor correspondiente y se le asigna 
                         datos[j][i] = (datos[j][i] - self.medias[conteo_lista_decimales])/self.desviaciones[conteo_lista_decimales]
                     conteo_lista_decimales+=1
+
+

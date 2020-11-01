@@ -177,9 +177,14 @@ class Clasificador:
         
         # Llamamos a la funcion de calculo del error y las tasas
         tasa_acierto, tp, fp, tn, fn = self.error(datos_tabla_test, predicciones)
-
+        
         # Sumamos las tasas de fallo para calcular la media posteriormente
         media_error += (1 - tasa_acierto)
+
+        media_tp += tp
+        media_fp += fp
+        media_tn += tn
+        media_fn += fn
 
     # Calculamos las medias 
     media_error = media_error / len(lista_particiones)
@@ -396,12 +401,12 @@ class ClasficadorRegresionLogistica(Clasificador):
 
     # Entendemos que estamos trabajando con una frontera de 3 variables
     for i in range(len(self.frontera_decision)):
-      self.frontera_decision[i] = random.uniform(-1,1)
+      self.frontera_decision[i] = random.uniform(-0.5,0.5)
 
   def entrenamiento(self,datos):
     # Necesitamos conocer el numero de atributos del dataset para saber cuantas componentes tendra la frontera
-    atributos_vector_X = len(datos[0])-1
-    self.frontera_decision = np.zeros(atributos_vector_X + 1,dtype=float)
+    atributos_vector_X = len(datos[0])
+    self.frontera_decision = np.zeros(atributos_vector_X,dtype=float)
     self.incializarFrontera()
 
     for i in range(self.epocas):
@@ -409,40 +414,53 @@ class ClasficadorRegresionLogistica(Clasificador):
         # Calculamos el valor para introducir en la sigmoide
         # Multiplicacion de vectores <w*x>
         sumatorio = 0
-        for k in range(atributos_vector_X+1): # Todos los atributos y Clase de la fila de datos
+        for k in range(atributos_vector_X): # Todos los atributos y Clase de la fila de datos
           sumatorio += (float(datos[j][k]) * self.frontera_decision[k])
 
         # Pasamos por la sigmoide
-        sigmoide = 1/(1+math.exp(-sumatorio))
-        
+        try:
+          sigmoide = 1/(1+math.exp(-sumatorio))
+        except OverflowError:
+            if(sumatorio >= 0): #valor positivo
+              sigmoide = 1.0 # e^(-sumatorio) siendo sumatorio mayor que 0 ==> un numero extremadamente pequenio ==> 1/1
+            elif (sumatorio < 0):
+              sigmoide = 0.0 # e^(-(-sumatorio)) siendo sumatorio menor que 0 ==> un numero extremadamente grande ==> 1/infinito ==> 0
+
         # Hacemos la correccion de frontera
         # Valor sigmoide - clase
         parte_auxiliar = (sigmoide - float(datos[j][-1]))*self.tasa_aprendizaje
 
         # Array axuiliar para guardar vector_X = tasa * (sigmoide-clasificacion) * vector_X
-        vector_X_aux = np.zeros(atributos_vector_X+1,dtype=float)
+        vector_X_aux = np.zeros(atributos_vector_X,dtype=float)
 
-        for k in range(atributos_vector_X+1):
+        for k in range(atributos_vector_X):
           vector_X_aux[k] = float(datos[j][k])*parte_auxiliar
-        
+
         # Nuevas "cordenadas" en la frontera de decision
-        for k in range(atributos_vector_X+1):
+        for k in range(atributos_vector_X):
           self.frontera_decision[k] = self.frontera_decision[k] - vector_X_aux[k]
-    
+
     return self.frontera_decision
   
   def clasifica(self,datos):
-    atributos_vector_X = len(datos[0])-1
+    atributos_vector_X = len(datos[0])
     # Creamos un array para almacenar las predicciones
     predicciones = []
     # Recorremos todos las filas de datos
     for i in range(len(datos)):
         sumatorio = 0 # Sacamos el sumatorio de componentes dek vecotr w por los atributos de la fila
-        for k in range(atributos_vector_X+1): # Todos los atributos y Clase de la fila de datos
+        for k in range(atributos_vector_X): # Todos los atributos y Clase de la fila de datos
           sumatorio += (float(datos[i][k]) * self.frontera_decision[k])
 
         # Pasamos por la sigmoide
-        sigmoide = 1/1+math.exp(-sumatorio)
+        try:
+          sigmoide = 1/(1+math.exp(-sumatorio))
+        except OverflowError:
+            if(sumatorio >= 0): #valor positivo
+              sigmoide = 1.0 # e^(-sumatorio) siendo sumatorio mayor que 0 ==> un numero extremadamente pequenio ==> 1/1
+            elif (sumatorio < 0):
+              sigmoide = 0.0 # e^(-(-sumatorio)) siendo sumatorio menor que 0 ==> un numero extremadamente grande ==> 1/infinito ==> 0
+
 
         # Guardamos la prediccion
         predicciones.append(sigmoide)
