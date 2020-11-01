@@ -395,17 +395,16 @@ class ClasficadorRegresionLogistica(Clasificador):
     self.epocas = epocas
   
   def incializarFrontera(self):
-    # Inicializamos los valores de la frontera aleatoriamente entre -1 y 1
+    # Inicializamos los valores de la frontera aleatoriamente entre -0.5 y 0.5
     # Plantamos semilla
     random.seed(0)
 
-    # Entendemos que estamos trabajando con una frontera de 3 variables
     for i in range(len(self.frontera_decision)):
       self.frontera_decision[i] = random.uniform(-0.5,0.5)
 
   def entrenamiento(self,datos):
     # Necesitamos conocer el numero de atributos del dataset para saber cuantas componentes tendra la frontera
-    atributos_vector_X = len(datos[0])
+    atributos_vector_X = len(datos[0]) 
     self.frontera_decision = np.zeros(atributos_vector_X,dtype=float)
     self.incializarFrontera()
 
@@ -415,16 +414,19 @@ class ClasficadorRegresionLogistica(Clasificador):
         # Multiplicacion de vectores <w*x>
         sumatorio = 0
         for k in range(atributos_vector_X): # Todos los atributos y Clase de la fila de datos
-          sumatorio += (float(datos[j][k]) * self.frontera_decision[k])
+          if k == 0:
+            sumatorio += 1.0 * self.frontera_decision[k]
+          else:
+            sumatorio += (float(datos[j][k-1]) * self.frontera_decision[k])
 
         # Pasamos por la sigmoide
         try:
           sigmoide = 1/(1+math.exp(-sumatorio))
         except OverflowError:
-            if(sumatorio >= 0): #valor positivo
-              sigmoide = 1.0 # e^(-sumatorio) siendo sumatorio mayor que 0 ==> un numero extremadamente pequenio ==> 1/1
-            elif (sumatorio < 0):
-              sigmoide = 0.0 # e^(-(-sumatorio)) siendo sumatorio menor que 0 ==> un numero extremadamente grande ==> 1/infinito ==> 0
+          if(sumatorio >= 0): #valor positivo
+            sigmoide = 1.0 # e^(-sumatorio) siendo sumatorio mayor que 0 ==> un numero extremadamente pequenio ==> 1/1
+          elif (sumatorio < 0):
+            sigmoide = 0.0 # e^(-(-sumatorio)) siendo sumatorio menor que 0 ==> un numero extremadamente grande ==> 1/infinito ==> 0
 
         # Hacemos la correccion de frontera
         # Valor sigmoide - clase
@@ -434,10 +436,11 @@ class ClasficadorRegresionLogistica(Clasificador):
         vector_X_aux = np.zeros(atributos_vector_X,dtype=float)
 
         for k in range(atributos_vector_X):
-          vector_X_aux[k] = float(datos[j][k])*parte_auxiliar
+          if k == 0:
+            vector_X_aux[k] = 1.0 * parte_auxiliar
+          else:
+            vector_X_aux[k] = float(datos[j][k-1])*parte_auxiliar
 
-        # Nuevas "cordenadas" en la frontera de decision
-        for k in range(atributos_vector_X):
           self.frontera_decision[k] = self.frontera_decision[k] - vector_X_aux[k]
 
     return self.frontera_decision
@@ -448,22 +451,30 @@ class ClasficadorRegresionLogistica(Clasificador):
     predicciones = []
     # Recorremos todos las filas de datos
     for i in range(len(datos)):
-        sumatorio = 0 # Sacamos el sumatorio de componentes dek vecotr w por los atributos de la fila
-        for k in range(atributos_vector_X): # Todos los atributos y Clase de la fila de datos
-          sumatorio += (float(datos[i][k]) * self.frontera_decision[k])
+      sumatorio = 0 # Sacamos el sumatorio de componentes del vector w por los atributos de la fila
+      for k in range(atributos_vector_X): # Todos los atributos y Clase de la fila de datos
+        if k == 0:
+          sumatorio += 1.0 * self.frontera_decision[k]
+        else:
+          sumatorio += (float(datos[i][k-1]) * self.frontera_decision[k])
 
-        # Pasamos por la sigmoide
-        try:
-          sigmoide = 1/(1+math.exp(-sumatorio))
-        except OverflowError:
-            if(sumatorio >= 0): #valor positivo
-              sigmoide = 1.0 # e^(-sumatorio) siendo sumatorio mayor que 0 ==> un numero extremadamente pequenio ==> 1/1
-            elif (sumatorio < 0):
-              sigmoide = 0.0 # e^(-(-sumatorio)) siendo sumatorio menor que 0 ==> un numero extremadamente grande ==> 1/infinito ==> 0
+      # Pasamos por la sigmoide
+      try:
+        sigmoide = 1/(1+math.exp(-sumatorio))
+      except OverflowError:
+        if(sumatorio >= 0): #valor positivo
+          sigmoide = 1.0 # e^(-sumatorio) siendo sumatorio mayor que 0 ==> un numero extremadamente pequenio ==> 1/1
+        elif (sumatorio < 0):
+          sigmoide = 0.0 # e^(-(-sumatorio)) siendo sumatorio menor que 0 ==> un numero extremadamente grande ==> 1/infinito ==> 0
 
+      # Si P(X|C1) > 0.5
+      if sigmoide > 0.5:
+        sigmoide = 1.0 # Clase 1
+      else:
+        sigmoide = 0.0 # Clase 2
 
-        # Guardamos la prediccion
-        predicciones.append(sigmoide)
+      # Guardamos la prediccion
+      predicciones.append(sigmoide)
     
     return predicciones
 

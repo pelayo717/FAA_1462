@@ -177,9 +177,15 @@ class Verificados_KVecinos(Verificador):
     datos = None # Datos sin preprocesar
     pred = None # Predicciones realizadas
     real_pred = None # Clasificaciones reales
+    n_vecinos = None # Numero de vecinos a observar
+    pesos = None 
+    metrica = None # Tipo de distancia que se quiere calcular
 
-    def __init__(self, nvecinos=3,pesos='uniform',metrica='euclidean'): #,metric_params={'V':}
-        self.kn = KNeighborsClassifier(n_neighbors=nvecinos,weights=pesos,metric=metrica) #Debemos aniadir metric_params para Mahalanobis metric_params={'V':}
+    def __init__(self, nvecinos=3,pesos='uniform',metrica='euclidean'):
+        self.n_vecinos = nvecinos
+        self.pesos = pesos
+        self.metrica = metrica
+         
 
     def clasificate(self, prepro, tipo_validacion, porcentaje, folds, archivo):
         # Hacemos un preprocesado
@@ -190,6 +196,24 @@ class Verificados_KVecinos(Verificador):
 
         # EXTRACCION Y DE X
         X,Y=self.separacion(self.datos)
+
+        if self.metrica == "mahalanobis":
+            # Transformamos el dataset en un ndarray
+            matrix =  np.zeros((len(self.datos),len(self.datos[0])-1),dtype=float)
+            for i in range(len(self.datos)):
+                aux = self.datos[i][:-1]
+                matrix[i] = aux
+
+            # Generamos la matriz de covarianza
+            covarianza = np.cov(matrix.T)
+  
+            # Calculamos su inversa
+            inversa = np.linalg.inv(covarianza)
+
+            self.kn = KNeighborsClassifier(n_neighbors=self.n_vecinos,weights=self.pesos,metric=self.metrica, metric_params={'V': inversa})    
+        
+        else:
+            self.kn = KNeighborsClassifier(n_neighbors=self.n_vecinos,weights=self.pesos,metric=self.metrica)
 
         # Tipo de Validacion
         if(tipo_validacion == 1):

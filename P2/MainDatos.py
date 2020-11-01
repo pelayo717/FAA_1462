@@ -14,7 +14,7 @@ if __name__ == "__main__":
     fileName = "ConjuntosDatos/wdbc.data"
     datos_wdbc = Datos(fileName)
 
-    knn = ClasificadorVecinosProximos(3, Mahalanobis)
+    knn = ClasificadorVecinosProximos(3, Euclidea)
     cl = ClasficadorRegresionLogistica(0.5,20)
 
     ############################## Diabetes ##############################
@@ -24,8 +24,6 @@ if __name__ == "__main__":
     validacion_cruzada_diabetes = ValidacionCruzada(6)
     cruzada_diabetes = validacion_cruzada_diabetes.creaParticiones(datos_diabetes)
     
-    """ El validador de rl estaba despues de knn, pero como en knn normalizas los datos pues regresion
-    logistica esta heredando esa normalizacion que a priori no debe"""
     medias_simples_diabetes_rl = cl.validacion(validacion_simple_diabetes, datos_diabetes)
     medias_cruzadas_diabetes_rl = cl.validacion(validacion_cruzada_diabetes, datos_diabetes)
 
@@ -150,17 +148,22 @@ if __name__ == "__main__":
 
     verificador_knn = Verificados_KVecinos(3,'uniform','mahalanobis')
 
-    """diabetes_sin_kn_simple_mah = verificador_knn.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/pima-indians-diabetes.data")
+    diabetes_sin_kn_simple_mah = verificador_knn.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/pima-indians-diabetes.data")
 
     diabetes_sin_kn_cruzada_mah = verificador_knn.clasificate(prepro=False,tipo_validacion=2,porcentaje=0.75,folds=6,archivo="ConjuntosDatos/pima-indians-diabetes.data")
 
     wdbc_sin_kn_simple_mah = verificador_knn.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/wdbc.data")
 
     wdbc_sin_kn_cruzada_mah = verificador_knn.clasificate(prepro=False,tipo_validacion=2,porcentaje=0.75,folds=6,archivo="ConjuntosDatos/wdbc.data")
-"""
 
-    resultados_sk_sin = [[round(diabetes_sin_kn_simple_eu, 3), round(wdbc_sin_kn_simple_eu, 3) , round(diabetes_sin_kn_simple_man,3), round(wdbc_sin_kn_simple_man,3)],  [round(diabetes_sin_kn_cruzada_eu, 3), round(wdbc_sin_kn_cruzada_eu, 3) , round(diabetes_sin_kn_cruzada_man,3), round(wdbc_sin_kn_cruzada_man,3)]]
+
+    resultados_sk_sin = [[round(diabetes_sin_kn_simple_eu, 3), round(wdbc_sin_kn_simple_eu, 3), 
+        round(diabetes_sin_kn_simple_man,3), round(wdbc_sin_kn_simple_man,3), 
+        round(diabetes_sin_kn_simple_mah,3), round(wdbc_sin_kn_simple_mah,3)],  
+        [round(diabetes_sin_kn_cruzada_eu, 3), round(wdbc_sin_kn_cruzada_eu, 3), 
+        round(diabetes_sin_kn_cruzada_man,3), round(wdbc_sin_kn_cruzada_man,3),
+        round(diabetes_sin_kn_cruzada_mah,3), round(wdbc_sin_kn_cruzada_mah,3)]]
 
     print("SKLearn:")
     print("Sin Preprocesado KNN")
-    print(tabulate(resultados_sk_sin, headers=['Tasa de error', 'Diabetes(Euclidean)', 'Wdbc(Euclidean)','Diabetes(Manhattan)','Wdbc(Manhattan)'], showindex=['Val. Simple', 'Val. Cruzada'], tablefmt='fancy_grid'))
+    print(tabulate(resultados_sk_sin, headers=['Tasa de error', 'Diabetes(Euclidean)', 'Wdbc(Euclidean)','Diabetes(Manhattan)','Wdbc(Manhattan)','Diabetes(Mahalanobis)','Wdbc(Mahalanobis)'], showindex=['Val. Simple', 'Val. Cruzada'], tablefmt='fancy_grid'))
