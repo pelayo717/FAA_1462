@@ -16,6 +16,10 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import LabelEncoder
 
+#Preprocesamiento Regresion Logistica
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
 #Validaciones 
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
@@ -263,8 +267,14 @@ class Verificados_RegresionLogistica_RL(Verificador):
     # a la media por dos de la suma de valores absolutos al cuadrado. Util para conocer correlaciones entre
     # los atributos de entrada.
 
-    def __init__(self,penalizacion="I2",tolerancia=0.0001,constante=1.0,sesgo=True,iteraciones_maximas=100):
-        self.rl_rl = LogisticRegression(penalty=penalizacion,tol=tolerancia,C=constante,fit_intercept=sesgo,max_iter=iteraciones_maximas)
+    # Solver es el algoritmo de optimizacion del clasififcador
+    # ==> lbfgs: para conjuntos multiclase | L2 <== escogido predeterminado
+    # ==> liblinear: para conjuntos de datos pequenios, uno vs resto 
+    # ==> newton-cg: para conjuntos multiclase | L2
+    # ==> sag,saga: para conjuntos de datos grandes y multiclase | L2 | L1 (saga)
+
+    def __init__(self,penalizacion="l2",tolerancia=0.0001,constante=1.0,sesgo=True,iteraciones_maximas=100,metodo_resolucion = "lbfgs"):
+        self.rl_rl = make_pipeline(StandardScaler(), LogisticRegression(penalty=penalizacion,tol=tolerancia,C=constante,fit_intercept=sesgo,max_iter=iteraciones_maximas,solver=metodo_resolucion))
 
     def clasificate(self,prepro,tipo_validacion,porcentaje,folds,archivo):
         # Hacemos un preprocesado
@@ -314,8 +324,8 @@ class Verificados_RegresionLogistica_SGD(Verificador):
     # El parametro loss son los ditintos metodos que tiene este clasificador para clasificar, entre los que incluye
     # REGRESION LOGISTICA (log), REDES NEURONALES (perceptron) etc...
 
-    def __init__(self,metodo="log",penalizacion="I2",tolerancia=0.0001,sesgo=True,ratio_aprendizaje="optimal",iteraciones_maximas=100):
-        self.rl_sgd = SGDClassifier(loss=metodo,penalty=penalizacion,alpha=,tol=tolerancia,fit_intercept=sesgo,learning_rate=ratio_aprendizaje,max_iter=iteraciones_maximas)
+    def __init__(self,metodo="log",penalizacion="l2",alfa=0.0001,tolerancia=0.0001,sesgo=True,ratio_aprendizaje="optimal",iteraciones_maximas=100):
+        self.rl_sgd = make_pipeline(StandardScaler(), SGDClassifier(loss=metodo,penalty=penalizacion,alpha=alfa,tol=tolerancia,fit_intercept=sesgo,learning_rate=ratio_aprendizaje,max_iter=iteraciones_maximas))
 
     def clasificate(self,prepro,tipo_validacion,porcentaje,folds,archivo):
         # Hacemos un preprocesado

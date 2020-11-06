@@ -167,3 +167,35 @@ if __name__ == "__main__":
     print("SKLearn:")
     print("Sin Preprocesado KNN")
     print(tabulate(resultados_sk_sin, headers=['Tasa de error', 'Diabetes(Euclidean)', 'Wdbc(Euclidean)','Diabetes(Manhattan)','Wdbc(Manhattan)','Diabetes(Mahalanobis)','Wdbc(Mahalanobis)'], showindex=['Val. Simple', 'Val. Cruzada'], tablefmt='fancy_grid'))
+
+    # La panlizacion se refiere a Lasso 1 o 2; viene descrito en un comentario dentro del clasificador
+    # La variable tolerancia se refiere, permite que si se llega a ese valor marcado el clasificador para de iterar
+    # La constante, es la inversa de la fuerza de regulacion
+    # El sesgo, permite incentivar unas respuestas frente a otras, util para corregir con mayor profundidad
+
+    verificador_rl = Verificados_RegresionLogistica_RL(penalizacion="l2",tolerancia=0.1,constante=1.0,sesgo=True,iteraciones_maximas=1000)
+
+    diabetes_sin_simple = verificador_rl.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/pima-indians-diabetes.data")
+    diabetes_con_simple = verificador_rl.clasificate(prepro=True,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/pima-indians-diabetes.data")    
+    diabetes_sin_cruzada = verificador_rl.clasificate(prepro=False,tipo_validacion=2,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/pima-indians-diabetes.data")
+    diabetes_con_cruzada = verificador_rl.clasificate(prepro=True,tipo_validacion=2,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/pima-indians-diabetes.data")
+
+
+    wdbc_sin_simple = verificador_rl.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/wdbc.data")
+    wdbc_con_simple = verificador_rl.clasificate(prepro=True,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/wdbc.data")
+    wdbc_sin_cruzada = verificador_rl.clasificate(prepro=False,tipo_validacion=2,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/wdbc.data")
+    wdbc_con_cruzada = verificador_rl.clasificate(prepro=True,tipo_validacion=2,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/wdbc.data")
+
+    resultados_sk_sin = [[round(diabetes_sin_simple, 3), round(wdbc_sin_simple, 3), 
+        round(diabetes_con_simple,3), round(wdbc_con_simple,3)],  
+        [round(diabetes_sin_cruzada, 3), round(wdbc_sin_cruzada, 3), 
+        round(diabetes_con_cruzada,3), round(wdbc_con_cruzada,3)]]
+
+    print("SKLearn:")
+    print("Regresion Logistica")
+    print(tabulate(resultados_sk_sin, headers=['Tasa de error', 'Diabetes(Sin Prepro)', 'Wdbc(Sin Prepro)','Diabetes(Con Prepro)','Wdbc(Con Prepro)'], showindex=['Val. Simple', 'Val. Cruzada'], tablefmt='fancy_grid'))
+
+
+
+
+
