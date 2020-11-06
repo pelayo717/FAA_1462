@@ -4,9 +4,13 @@ from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB,MultinomialNB
 
-#P2
+#P2 KNN
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.neighbors import DistanceMetric
+
+#P2 Regresion Logistica
+from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import SGDClassifier
 
 #Preprocesamiento de datos OneHot
 from sklearn.preprocessing import OneHotEncoder
@@ -235,4 +239,109 @@ class Verificados_KVecinos(Verificador):
             fallos = (Y != self.pred).sum()
             return (float(fallos)/float(len(self.pred)))
 
-    
+# Enlace que permite entende la diferencia entre ambos
+# https://stackoverflow.com/questions/43961225/sgdclassifier-vs-logisticregression-with-sgd-solver-in-scikit-learn-library#:~:text=Logistic%20Regression%20in%20Sklearn%20doesn,Gradient%20Descent%20as%20a%20solver.
+# La diferencia es que LogisticRegression usa el metodo convencional para minimizar la funcion de coste, usando las 
+# regularizaciones Lasso para ello. Por el contrario, SGDClassifier, es un clasififcador lineal generalizado,
+# que usa el descenso del grandiente como resolucion. 
+# Puede usar diferentes funciones de penalizacion, lo que permite configurar mucho mas el clasificador pero en si,
+# ambos clasificadores resuelven lo mismo, pero de formas distintas.
+
+class Verificados_RegresionLogistica_RL(Verificador):
+
+    rl_rl = None # Propio clasificador LogisticRegression
+    datos = None # Datos sin preprocesar
+    pred = None # Predicciones realizadas
+    pred_prob = None # Estimaciones de probabilidad
+    real_pred = None # Clasificaciones reales
+
+    # Recordamos que Lasso I1, usa para minimizar la funcion aniade una penalizacion C que corresponde a 
+    # la media de la suma de los valores absolutos. Util para conocer relevancias entre atributos de entrada,
+    # dicho de otro modo, para conocer cuales de los de entrada son irrelevantes.
+
+    # Recodramod que Lasso I2, usa para minimizar la funcion de coste aniade una penalizacion C que corresponde
+    # a la media por dos de la suma de valores absolutos al cuadrado. Util para conocer correlaciones entre
+    # los atributos de entrada.
+
+    def __init__(self,penalizacion="I2",tolerancia=0.0001,constante=1.0,sesgo=True,iteraciones_maximas=100):
+        self.rl_rl = LogisticRegression(penalty=penalizacion,tol=tolerancia,C=constante,fit_intercept=sesgo,max_iter=iteraciones_maximas)
+
+    def clasificate(self,prepro,tipo_validacion,porcentaje,folds,archivo):
+        # Hacemos un preprocesado
+        if(prepro == True):
+            self.datos = self.preprocesado_OneHot(archivo)
+        else: # Mantenemos los datos sino
+            self.datos = self.preprocesado_Normal(archivo)
+
+        # EXTRACCION Y DE X
+        X,Y=self.separacion(self.datos)
+
+        # Tipo de Validacion
+        if(tipo_validacion == 1):
+            X_train, X_test, Y_train, Y_test = self.validacion_Simple(X,Y,porcentaje)
+            # Entreamos el clasificador
+            self.rl_rl.fit(X_train, Y_train)
+            # Predecimos
+            self.pred = self.rl_rl.predict(X_test)
+            #self.pred_prob = self.rl_rl.predict_proba(X_test)
+            self.real_pred = Y_test
+            # Hallamos el numero de fallos y retornamos
+            fallos = (Y_test != self.pred).sum()
+            return (float(fallos)/float(len(self.pred)))
+        elif(tipo_validacion == 2):
+            # Pasamos el clasificador y una serie de datos a la funcion de validacion cruzada
+            acierto_carpetas, self.pred = self.validacion_Cruzada(self.rl_rl,X,Y,folds)
+            self.real_pred = Y
+            # Hallamos el numero de fallos y retornamos
+            fallos = (Y != self.pred).sum()
+            return (float(fallos)/float(len(self.pred)))
+
+class Verificados_RegresionLogistica_SGD(Verificador):
+
+    rl_sgd = None # Propio clasificador LogisticRegression
+    datos = None # Datos sin preprocesar
+    pred = None # Predicciones realizadas
+    real_pred = None # Clasificaciones reales
+
+    # Recordamos que Lasso I1, usa para minimizar la funcion aniade una penalizacion C que corresponde a 
+    # la media de la suma de los valores absolutos. Util para conocer relevancias entre atributos de entrada,
+    # dicho de otro modo, para conocer cuales de los de entrada son irrelevantes.
+
+    # Recodramod que Lasso I2, usa para minimizar la funcion de coste aniade una penalizacion C que corresponde
+    # a la media por dos de la suma de valores absolutos al cuadrado. Util para conocer correlaciones entre
+    # los atributos de entrada.
+
+    # El parametro loss son los ditintos metodos que tiene este clasificador para clasificar, entre los que incluye
+    # REGRESION LOGISTICA (log), REDES NEURONALES (perceptron) etc...
+
+    def __init__(self,metodo="log",penalizacion="I2",tolerancia=0.0001,sesgo=True,ratio_aprendizaje="optimal",iteraciones_maximas=100):
+        self.rl_sgd = SGDClassifier(loss=metodo,penalty=penalizacion,alpha=,tol=tolerancia,fit_intercept=sesgo,learning_rate=ratio_aprendizaje,max_iter=iteraciones_maximas)
+
+    def clasificate(self,prepro,tipo_validacion,porcentaje,folds,archivo):
+        # Hacemos un preprocesado
+        if(prepro == True):
+            self.datos = self.preprocesado_OneHot(archivo)
+        else: # Mantenemos los datos sino
+            self.datos = self.preprocesado_Normal(archivo)
+
+        # EXTRACCION Y DE X
+        X,Y=self.separacion(self.datos)
+
+        # Tipo de Validacion
+        if(tipo_validacion == 1):
+            X_train, X_test, Y_train, Y_test = self.validacion_Simple(X,Y,porcentaje)
+            # Entreamos el clasificador
+            self.rl_sgd.fit(X_train, Y_train)
+            # Predecimos
+            self.pred = self.rl_sgd.predict(X_test)
+            self.real_pred = Y_test
+            # Hallamos el numero de fallos y retornamos
+            fallos = (Y_test != self.pred).sum()
+            return (float(fallos)/float(len(self.pred)))
+        elif(tipo_validacion == 2):
+            # Pasamos el clasificador y una serie de datos a la funcion de validacion cruzada
+            acierto_carpetas, self.pred = self.validacion_Cruzada(self.rl_sgd,X,Y,folds)
+            self.real_pred = Y
+            # Hallamos el numero de fallos y retornamos
+            fallos = (Y != self.pred).sum()
+            return (float(fallos)/float(len(self.pred)))
