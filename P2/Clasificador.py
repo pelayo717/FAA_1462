@@ -468,7 +468,8 @@ class ClasficadorRegresionLogistica(Clasificador):
           sigmoide = 0.0 # e^(-(-sumatorio)) siendo sumatorio menor que 0 ==> un numero extremadamente grande ==> 1/infinito ==> 0
 
       # Si P(X|C1) > 0.5
-      if sigmoide > 0.5:
+      if sigmoide <= 0.5: # La calculada en la sigmoide corresponde a la probabilidad de C1, entendemos que si esta es menor que 0,5 es por tanto menor que la C2 y por tanto el clasificador
+                          # pensara que es de clase C2, y no de C1
         sigmoide = 1.0 # Clase 1
       else:
         sigmoide = 0.0 # Clase 2
