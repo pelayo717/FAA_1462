@@ -16,6 +16,7 @@ if __name__ == "__main__":
 
     knn = ClasificadorVecinosProximos(3, Euclidea)
     cl = ClasficadorRegresionLogistica(0.5,20)
+    nb = ClasificadorNaiveBayes()
 
     ############################## Diabetes ##############################
     validacion_simple_diabetes = ValidacionSimple(75,10)
@@ -24,11 +25,14 @@ if __name__ == "__main__":
     validacion_cruzada_diabetes = ValidacionCruzada(6)
     cruzada_diabetes = validacion_cruzada_diabetes.creaParticiones(datos_diabetes)
     
+    medias_simples_diabetes_nb = nb.validacion(validacion_simple_diabetes, datos_diabetes, True)
+    medias_cruzadas_diabetes_nb = nb.validacion(validacion_cruzada_diabetes, datos_diabetes, True)
+
     medias_simples_diabetes_rl = cl.validacion(validacion_simple_diabetes, datos_diabetes)
     medias_cruzadas_diabetes_rl = cl.validacion(validacion_cruzada_diabetes, datos_diabetes)
 
-    medias_simples_diabetes = knn.validacion(validacion_simple_diabetes, datos_diabetes)
-    medias_cruzadas_diabetes = knn.validacion(validacion_cruzada_diabetes, datos_diabetes)
+    medias_simples_diabetes_knn = knn.validacion(validacion_simple_diabetes, datos_diabetes)
+    medias_cruzadas_diabetes_knn = knn.validacion(validacion_cruzada_diabetes, datos_diabetes)
     
     
 
@@ -39,16 +43,19 @@ if __name__ == "__main__":
     validacion_cruzada_wdbc = ValidacionCruzada(6)
     cruzada_wdbc = validacion_cruzada_wdbc.creaParticiones(datos_wdbc)
 
+    medias_simples_wdbc_nb = nb.validacion(validacion_simple_wdbc, datos_wdbc, True)
+    medias_cruzadas_wdbc_nb = nb.validacion(validacion_cruzada_wdbc, datos_wdbc, True)
+    
     medias_simples_wdbc_rl = cl.validacion(validacion_simple_wdbc, datos_wdbc)
     medias_cruzadas_wdbc_rl = cl.validacion(validacion_cruzada_wdbc, datos_wdbc)
     
-    medias_simples_wdbc = knn.validacion(validacion_simple_wdbc, datos_wdbc)
-    medias_cruzadas_wdbc = knn.validacion(validacion_cruzada_wdbc, datos_wdbc)
+    medias_simples_wdbc_knn = knn.validacion(validacion_simple_wdbc, datos_wdbc)
+    medias_cruzadas_wdbc_knn = knn.validacion(validacion_cruzada_wdbc, datos_wdbc)
 
 
     # Guardamos resultados de los resultados KNN
-    resultados_P2 = [[round(medias_simples_diabetes[0], 3), round(medias_simples_wdbc[0], 3)], 
-            [round(medias_cruzadas_diabetes[0], 3), round(medias_cruzadas_wdbc[0], 3)]]
+    resultados_P2 = [[round(medias_simples_diabetes_knn[0], 3), round(medias_simples_wdbc_knn[0], 3)], 
+            [round(medias_cruzadas_diabetes_knn[0], 3), round(medias_cruzadas_wdbc_knn[0], 3)]]
 
     # Impresion de las tablas
     print("Practica 2 KNN:")
@@ -69,21 +76,30 @@ if __name__ == "__main__":
     mx1 = MatrizConfusion()
 
     # DIABETES
-    print("\nDiabetes KNN")
-    tpr, fpr = mx1.matrix_media(medias_simples_diabetes[1], 
-        medias_cruzadas_diabetes[1], 
-        medias_simples_diabetes[2], 
-        medias_cruzadas_diabetes[2],
-        medias_simples_diabetes[3], 
-        medias_cruzadas_diabetes[3],
-        medias_simples_diabetes[4], 
-        medias_cruzadas_diabetes[4])
 
-    plot_points = [[fpr, tpr, 'KNN']]
-    mx1.plot(plot_points, "Diabetes")
+    print("\nDiabetes NB")
+    tpr_nb, fpr_nb = mx1.matrix_media(medias_simples_diabetes_nb[1], 
+        medias_cruzadas_diabetes_nb[1], 
+        medias_simples_diabetes_nb[2], 
+        medias_cruzadas_diabetes_nb[2],
+        medias_simples_diabetes_nb[3], 
+        medias_cruzadas_diabetes_nb[3],
+        medias_simples_diabetes_nb[4], 
+        medias_cruzadas_diabetes_nb[4])
+
+    print("\nDiabetes KNN")
+    tpr_knn, fpr_knn = mx1.matrix_media(medias_simples_diabetes_knn[1], 
+        medias_cruzadas_diabetes_knn[1], 
+        medias_simples_diabetes_knn[2], 
+        medias_cruzadas_diabetes_knn[2],
+        medias_simples_diabetes_knn[3], 
+        medias_cruzadas_diabetes_knn[3],
+        medias_simples_diabetes_knn[4], 
+        medias_cruzadas_diabetes_knn[4])
+
 
     print("\nDiabetes Regresion Logistica")
-    tpr, fpr = mx1.matrix_media(medias_simples_diabetes_rl[1], 
+    tpr_rl, fpr_rl = mx1.matrix_media(medias_simples_diabetes_rl[1], 
         medias_cruzadas_diabetes_rl[1], 
         medias_simples_diabetes_rl[2], 
         medias_cruzadas_diabetes_rl[2],
@@ -92,25 +108,34 @@ if __name__ == "__main__":
         medias_simples_diabetes_rl[4], 
         medias_cruzadas_diabetes_rl[4])
 
-    plot_points = [[fpr, tpr, 'Reg. Log.']]
+    plot_points = [[fpr_nb, tpr_nb, 'NB'], [fpr_knn, tpr_knn, 'KNN'], [fpr_rl, tpr_rl, 'RL']]
     mx1.plot(plot_points, "Diabetes")
 
     # WDBC
-    print("\nWdbc KNN")
-    tpr, fpr = mx1.matrix_media(medias_simples_wdbc[1], 
-        medias_cruzadas_wdbc[1], 
-        medias_simples_wdbc[2], 
-        medias_cruzadas_wdbc[2],
-        medias_simples_wdbc[3], 
-        medias_cruzadas_wdbc[3],
-        medias_simples_wdbc[4], 
-        medias_cruzadas_wdbc[4])
-    
-    plot_points = [[fpr, tpr, 'KNN']]
-    mx1.plot(plot_points, "Wdbc")
 
+    print("\nWdbc NB")
+    tpr_nb, fpr_nb = mx1.matrix_media(medias_simples_wdbc_nb[1], 
+        medias_cruzadas_wdbc_nb[1], 
+        medias_simples_wdbc_nb[2], 
+        medias_cruzadas_wdbc_nb[2],
+        medias_simples_wdbc_nb[3], 
+        medias_cruzadas_wdbc_nb[3],
+        medias_simples_wdbc_nb[4], 
+        medias_cruzadas_wdbc_nb[4])
+
+    
+    print("\nWdbc KNN")
+    tpr_knn, fpr_knn = mx1.matrix_media(medias_simples_wdbc_knn[1], 
+        medias_cruzadas_wdbc_knn[1], 
+        medias_simples_wdbc_knn[2], 
+        medias_cruzadas_wdbc_knn[2],
+        medias_simples_wdbc_knn[3], 
+        medias_cruzadas_wdbc_knn[3],
+        medias_simples_wdbc_knn[4], 
+        medias_cruzadas_wdbc_knn[4])
+    
     print("\nWdbc Regresion Logistica")
-    tpr, fpr = mx1.matrix_media(medias_simples_wdbc_rl[1], 
+    tpr_rl, fpr_rl = mx1.matrix_media(medias_simples_wdbc_rl[1], 
         medias_cruzadas_wdbc_rl[1], 
         medias_simples_wdbc_rl[2], 
         medias_cruzadas_wdbc_rl[2],
@@ -119,12 +144,12 @@ if __name__ == "__main__":
         medias_simples_wdbc_rl[4], 
         medias_cruzadas_wdbc_rl[4])
     
-    plot_points = [[fpr, tpr, 'Reg. Log.']]
+    plot_points = [[fpr_nb, tpr_nb, 'NB'], [fpr_knn, tpr_knn, 'KNN'], [fpr_rl, tpr_rl, 'RL']]
     mx1.plot(plot_points, "Wdbc")
 
     #################### VERIFICADORES KNN y REGRESION LOGISTICA ###############
 
-    verificador_knn = Verificados_KVecinos(3,'uniform','euclidean')
+    """verificador_knn = Verificados_KVecinos(3,'uniform','euclidean')
 
 
     diabetes_sin_kn_simple_eu = verificador_knn.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/pima-indians-diabetes.data")
@@ -195,7 +220,7 @@ if __name__ == "__main__":
     print("Regresion Logistica")
     print(tabulate(resultados_sk_sin, headers=['Tasa de error', 'Diabetes(Sin Prepro)', 'Wdbc(Sin Prepro)','Diabetes(Con Prepro)','Wdbc(Con Prepro)'], showindex=['Val. Simple', 'Val. Cruzada'], tablefmt='fancy_grid'))
 
-
+"""
 
 
 

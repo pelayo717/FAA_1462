@@ -310,9 +310,10 @@ class ClasificadorNaiveBayes(Clasificador):
 
           ### Comprobamos si el atributo es nominal o numerico ###
           # Si el atributo es nominal
+          valor_atributo = float(datostest[n][x])
           if datostotales.nominalAtributos[x] == True:
-            tabla_atributo = analisis_atributos[datostotales.atributos[x]]
-            valor_atributo = float(datostest[n][x])
+            
+            tabla_atributo = analisis_atributos[datostotales.atributos[x]]  
 
             # Seleccionamos el valor del atributo
             for i in range(len(tabla_atributo[0])):
