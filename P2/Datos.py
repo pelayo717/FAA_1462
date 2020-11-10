@@ -119,9 +119,9 @@ class Datos:
 
     # Devuelve una lista con los valores del dataset
     # Usa los indices para saber a que datos debe acceder
-    def extraeDatos(self, idx):
+    def extraeDatos(self, idx, datos_aux): # PELAYO ACUERDATE aniadir el valor sobre el que obtenemos el indice
         datos_tabla=[]          # Lista en la que se devolveran los ejemplos del dataset
         num_indices=len(idx)    # Numero de ejemplos del dataset
         for i in range(num_indices):
-            datos_tabla.append(self.datos[idx[i]])
+            datos_tabla.append(datos_aux[idx[i]])
         return datos_tabla

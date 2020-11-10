@@ -84,10 +84,10 @@ class Clasificador:
       for i in range(len(lista_particiones)):
         
         # Creamos una tabla auxiliar con los datos de Train
-        datos_tabla_train = dataset.extraeDatos(lista_particiones[i].indicesTrain)
+        datos_tabla_train = dataset.extraeDatos(lista_particiones[i].indicesTrain,dataset.datos)
         
         # Creamos una tabla auxiliar con los datos de Test
-        datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest)
+        datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest,dataset.datos)
 
         # LLamamos a la funcion de entrenamiento
         probabilidad_clase, analisis_atributos = self.entrenamiento(datos_tabla_train,dataset,laplace)
@@ -112,7 +112,7 @@ class Clasificador:
 
     if(isinstance(self, ClasificadorVecinosProximos) == True):
       datos_tabla_train = []
-      datos_tabla_test = []
+      datos_tabla_test = []      
       lista_particiones = particionado.creaParticiones(dataset)
       media_error = 0.0
       media_tp = 0.0
@@ -121,16 +121,16 @@ class Clasificador:
       media_fn = 0.0
       
       # LLamamos a la funcion de entrenamiento para normalizar todos los datos
-      datos = self.entrenamiento(dataset)
+      datos_aux = self.entrenamiento(dataset)
 
       # Recuperaremos tantas particiones como iteraciones se hayan indicado
       for i in range(len(lista_particiones)):
 
         # Creamos una tabla auxiliar con los datos de Train
-        datos_tabla_train = dataset.extraeDatos(lista_particiones[i].indicesTrain)
+        datos_tabla_train = dataset.extraeDatos(lista_particiones[i].indicesTrain,datos_aux)
         
         # Creamos una tabla auxiliar con los datos de Test
-        datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest)
+        datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest,datos_aux)
         
         # Llamamos a la funcion de clasificacion
         predicciones = self.clasifica(datos_tabla_train, datos_tabla_test)
@@ -164,10 +164,10 @@ class Clasificador:
       for i in range(len(lista_particiones)):
         
         # Creamos una tabla auxiliar con los datos de Train
-        datos_tabla_train = dataset.extraeDatos(lista_particiones[i].indicesTrain)
+        datos_tabla_train = dataset.extraeDatos(lista_particiones[i].indicesTrain,dataset.datos)
         
         # Creamos una tabla auxiliar con los datos de Test
-        datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest)
+        datos_tabla_test = dataset.extraeDatos(lista_particiones[i].indicesTest,dataset.datos)
 
         # LLamamos a la funcion de entrenamiento
         frontera_decision = self.entrenamiento(datos_tabla_train)
@@ -374,8 +374,8 @@ class ClasificadorVecinosProximos(Clasificador):
   def entrenamiento(self, datos):
     aux = Normalizar()
     aux.calcularMediasDesv(datos.datos,datos.nominalAtributos)
-    aux.normalizarDatos(datos.datos,datos.nominalAtributos)
-    return datos
+    datos_aux = aux.normalizarDatos(datos.datos,datos.nominalAtributos)
+    return datos_aux
   
   def clasifica(self, datosTrain, datosTest):
     distancias = self.distancia(datosTrain, datosTest)
