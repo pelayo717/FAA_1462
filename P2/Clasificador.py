@@ -60,7 +60,7 @@ class Clasificador:
     
     
   # Realiza una clasificacion utilizando una estrategia de particionado determinada
-  def validacion(self, particionado, dataset, laplace=False, seed=None):
+  def validacion(self, particionado, dataset, laplace=False, normalizacion_knn=True,seed=None):
     # Creamos las particiones siguiendo la estrategia llamando a particionado.creaParticiones
     # - Para validacion cruzada: en el bucle hasta nv entrenamos el clasificador con la particion de train i
     # y obtenemos el error en la particion de test i
@@ -121,7 +121,10 @@ class Clasificador:
       media_fn = 0.0
       
       # LLamamos a la funcion de entrenamiento para normalizar todos los datos
-      datos_aux = self.entrenamiento(dataset)
+      if(normalizacion_knn == True):
+        datos_aux = self.entrenamiento(dataset)
+      elif(normalizacion_knn == False):
+        datos_aux = dataset.datos
 
       # Recuperaremos tantas particiones como iteraciones se hayan indicado
       for i in range(len(lista_particiones)):

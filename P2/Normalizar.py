@@ -26,12 +26,12 @@ class Normalizar():
    
     def  normalizarDatos(self,datos,nominalAtributos): # Esto podria ser modificado en un futuro PELAYO ACUERDATE
         conteo_lista_decimales = 0
-        datos_aux = datos # ANIADIDO DIA 10
+        datos_aux = np.copy(datos) # ANIADIDO DIA 10
         for i in range(len(nominalAtributos)):
             if(nominalAtributos[i] == False): # Caso en el que son enteros o decimales
                 if(isinstance(datos[0][i],float) == True): # Comprobamos que sean decimales
                     for j in range(len(datos)): # Para cada valor de la columna, calculamos su nuevo valor correspondiente y se le asigna 
-                        datos_aux[j][i] = (datos[j][i] - self.medias[conteo_lista_decimales])/self.desviaciones[conteo_lista_decimales]
+                        datos_aux[j][i] = (datos_aux[j][i] - self.medias[conteo_lista_decimales])/self.desviaciones[conteo_lista_decimales]
                     conteo_lista_decimales+=1
         return datos_aux
 

@@ -8,17 +8,44 @@ from tabulate import tabulate
 
 if __name__ == "__main__":
 
+    # Abrimos los ficheros y extraemos los datos
     fileName = "ConjuntosDatos/pima-indians-diabetes.data"
     datos_diabetes = Datos(fileName)
 
     fileName = "ConjuntosDatos/wdbc.data"
     datos_wdbc = Datos(fileName)
 
-    knn = ClasificadorVecinosProximos(3, Euclidea)
-    cl = ClasficadorRegresionLogistica(0.5,20)
-    nb = ClasificadorNaiveBayes()
+    # Creamos las validaciones
+    validacion_simple_diabetes = ValidacionSimple(75,10)
+    #simple_diabetes = validacion_simple_diabetes.creaParticiones(datos_diabetes)
 
-    ############################## Diabetes ##############################
+    validacion_cruzada_diabetes = ValidacionCruzada(6)
+    #cruzada_diabetes = validacion_cruzada_diabetes.creaParticiones(datos_diabetes)
+
+    validacion_simple_wdbc = ValidacionSimple(75,10)
+    #simple_wdbc = validacion_simple_wdbc.creaParticiones(datos_wdbc)
+
+    validacion_cruzada_wdbc = ValidacionCruzada(6)
+    #cruzada_wdbc = validacion_cruzada_wdbc.creaParticiones(datos_wdbc)
+
+    knn = ClasificadorVecinosProximos(5, Euclidea)
+
+    medias_simples_diabetes_knn_5 = knn.validacion(validacion_simple_diabetes, datos_diabetes,False,True)
+    medias_cruzadas_diabetes_knn_5 = knn.validacion(validacion_cruzada_diabetes, datos_diabetes,False,True)
+
+    medias_simples_wdbc_knn_5 = knn.validacion(validacion_simple_wdbc, datos_wdbc,False,True)
+    medias_cruzadas_wdbc_knn_5 = knn.validacion(validacion_cruzada_wdbc, datos_wdbc,False,True)
+
+    medias_simples_diabetes_knn_5_sin = knn.validacion(validacion_simple_diabetes, datos_diabetes,False,False)
+    medias_cruzadas_diabetes_knn_5_sin = knn.validacion(validacion_cruzada_diabetes, datos_diabetes,False,False)
+
+    medias_simples_wdbc_knn_5_sin = knn.validacion(validacion_simple_wdbc, datos_wdbc,False,False)
+    medias_cruzadas_wdbc_knn_5_sin = knn.validacion(validacion_cruzada_wdbc, datos_wdbc,False,False)
+
+
+
+
+    """############################## Diabetes ##############################
     validacion_simple_diabetes = ValidacionSimple(75,10)
     simple_diabetes = validacion_simple_diabetes.creaParticiones(datos_diabetes)
 
@@ -149,7 +176,7 @@ if __name__ == "__main__":
 
     #################### VERIFICADORES KNN y REGRESION LOGISTICA ###############
 
-    """verificador_knn = Verificados_KVecinos(3,'uniform','euclidean')
+    verificador_knn = Verificados_KVecinos(3,'uniform','euclidean')
 
 
     diabetes_sin_kn_simple_eu = verificador_knn.clasificate(prepro=False,tipo_validacion=1,porcentaje=0.75,folds=3,archivo="ConjuntosDatos/pima-indians-diabetes.data")
