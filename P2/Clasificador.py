@@ -357,8 +357,6 @@ class ClasificadorNaiveBayes(Clasificador):
     return predicciones
 
 
-
-
 ##############################################################################
 
 class ClasificadorVecinosProximos(Clasificador):
