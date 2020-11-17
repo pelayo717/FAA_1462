@@ -81,11 +81,11 @@ def Mahalanobis(datosTrain, datosTest):
 
     # Para cada uno de los ejemplos de train, calculamos su distancia al ejemplo de test
     for i in range(num_filas_train):
-      atribs_train = [float(atributo) for atributo in datosTrain[i][:-1]]
+      atribs_train = list(matrix_train[i])
 
       # Calculamos la distancia de mahalanobis
-      valor_total = mahalanobis(atribs_test, atribs_train, inversa)
-
+      valor_total = mahalanobis(atribs_test, atribs_train, inversa)    
+      
       # Guardamos el valor de la distancia total y el indice al que corresponde el punto  
       distancias[i] = [valor_total, i]
 

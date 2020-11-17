@@ -32,9 +32,9 @@ if __name__ == "__main__":
 
     knn = ClasificadorVecinosProximos(1, Mahalanobis)
 
-    medias_cruzadas_diabetes_knn_1 = knn.validacion(validacion_cruzada_diabetes, datos_diabetes)
+    medias_cruzadas_diabetes_knn_1 = knn.validacion(validacion_cruzada_diabetes, datos_wdbc)
 
-    medias_cruzadas_diabetes_knn_1_sin = knn.validacion(validacion_cruzada_diabetes, datos_diabetes,False,False)
+    medias_cruzadas_diabetes_knn_1_sin = knn.validacion(validacion_cruzada_diabetes, datos_wdbc,False,False)
 
     """knn = ClasificadorVecinosProximos(5, Euclidea)
 
