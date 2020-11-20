@@ -26,7 +26,7 @@ class Normalizar():
    
     def  normalizarDatos(self,datos,nominalAtributos): # Esto podria ser modificado en un futuro PELAYO ACUERDATE
         conteo_lista_decimales = 0
-        datos_aux = np.copy(datos) # ANIADIDO DIA 10
+        datos_aux = np.copy(datos)
         for i in range(len(nominalAtributos)):
             if(nominalAtributos[i] == False): # Caso en el que son enteros o decimales
                 if(isinstance(datos[0][i],float) == True): # Comprobamos que sean decimales
