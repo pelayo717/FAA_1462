@@ -391,11 +391,12 @@ class ClasficadorRegresionLogistica(Clasificador):
   tasa_aprendizaje=None
   epocas=None
   frontera_decision=None
-
+  lista_aux=None
   # Recordemos que es recomendable que la tasa este entre -0.5 y 0.5
   def __init__(self,t_aprendizaje=0.2,epocas=10):
     self.tasa_aprendizaje = t_aprendizaje
     self.epocas = epocas
+    self.lista_aux=[]
   
   def incializarFrontera(self):
     # Inicializamos los valores de la frontera aleatoriamente entre -0.5 y 0.5
@@ -410,6 +411,11 @@ class ClasficadorRegresionLogistica(Clasificador):
     atributos_vector_X = len(datos[0]) 
     self.frontera_decision = np.zeros(atributos_vector_X,dtype=float)
     self.incializarFrontera()
+
+    # Guardamos las clases para luego despues de realizar la sigmoidal asignar en el cambio de peso la clase correspondiente
+    for i in range(len(datos)):
+      if datos[i][atributos_vector_X-1] not in self.lista_aux:
+        self.lista_aux.append(datos[i][atributos_vector_X-1])
 
     for i in range(self.epocas):
       for j in range(len(datos)):
@@ -426,14 +432,19 @@ class ClasficadorRegresionLogistica(Clasificador):
         try:
           sigmoide = 1/(1+math.exp(-sumatorio))
         except OverflowError:
-          if(sumatorio >= 0): #valor positivo
+          if(sumatorio > 0): #valor positivo
             sigmoide = 1.0 # e^(-sumatorio) siendo sumatorio mayor que 0 ==> un numero extremadamente pequenio ==> 1/1
           elif (sumatorio < 0):
             sigmoide = 0.0 # e^(-(-sumatorio)) siendo sumatorio menor que 0 ==> un numero extremadamente grande ==> 1/infinito ==> 0
 
         # Hacemos la correccion de frontera
         # Valor sigmoide - clase
-        parte_auxiliar = (sigmoide - float(datos[j][-1]))*self.tasa_aprendizaje
+        if(datos[j][-1] == self.lista_aux[0]):
+          t=1.0
+        else:
+          t=0.0
+
+        parte_auxiliar = (sigmoide - t)*self.tasa_aprendizaje
 
         # Array axuiliar para guardar vector_X = tasa * (sigmoide-clasificacion) * vector_X
         vector_X_aux = np.zeros(atributos_vector_X,dtype=float)
@@ -471,11 +482,11 @@ class ClasficadorRegresionLogistica(Clasificador):
           sigmoide = 0.0 # e^(-(-sumatorio)) siendo sumatorio menor que 0 ==> un numero extremadamente grande ==> 1/infinito ==> 0
 
       # Si P(X|C1) > 0.5
-      if sigmoide >= 0.5: # La calculada en la sigmoide corresponde a la probabilidad de C1, entendemos que si esta es menor que 0,5 es por tanto menor que la C2 y por tanto el clasificador
+      if sigmoide > 0.5: # La calculada en la sigmoide corresponde a la probabilidad de C1, entendemos que si esta es menor que 0,5 es por tanto menor que la C2 y por tanto el clasificador
                           # pensara que es de clase C2, y no de C1
-        sigmoide = 1.0 # Clase 1
+        sigmoide = self.lista_aux[0]
       else:
-        sigmoide = 0.0 # Clase 2
+        sigmoide =self.lista_aux[1]
 
       # Guardamos la prediccion
       predicciones.append(sigmoide)

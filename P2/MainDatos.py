@@ -28,13 +28,17 @@ if __name__ == "__main__":
     validacion_cruzada_wdbc = ValidacionCruzada(6)
     #cruzada_wdbc = validacion_cruzada_wdbc.creaParticiones(datos_wdbc)
 
+    rl = ClasficadorRegresionLogistica(0.75,500)
+    medias_simples_diabetes_rl=rl.validacion(validacion_simple_diabetes,datos_diabetes,False,False)
+    print(medias_simples_diabetes_rl)
+
     """ Distancia de Mahalanobis """
 
-    knn = ClasificadorVecinosProximos(1, Mahalanobis)
+    """nn = ClasificadorVecinosProximos(1, Mahalanobis)
 
     medias_cruzadas_diabetes_knn_1 = knn.validacion(validacion_cruzada_diabetes, datos_wdbc)
 
-    medias_cruzadas_diabetes_knn_1_sin = knn.validacion(validacion_cruzada_diabetes, datos_wdbc,False,False)
+    medias_cruzadas_diabetes_knn_1_sin = knn.validacion(validacion_cruzada_diabetes, datos_wdbc,False,False)"""
 
     """knn = ClasificadorVecinosProximos(5, Euclidea)
 
