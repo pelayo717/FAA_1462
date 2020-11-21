@@ -261,7 +261,6 @@ class ClasificadorNaiveBayes(Clasificador):
           for p in range(len(valores_posibles)):
             matriz_atributo[l][p]=collections.Counter(valores_columna)[valores_posibles[p]]
 
-
         #Laplace
         if(laplace == True):
           if(np.count_nonzero(matriz_atributo) != len(valores_clases)*len(valores_posibles)): #No hay ceros
@@ -360,25 +359,32 @@ class ClasificadorNaiveBayes(Clasificador):
 ##############################################################################
 
 class ClasificadorVecinosProximos(Clasificador):
+  
   k = None
   distancia = None
 
+  # Inicializamos la clase de vecinos proximos pasando la funcion de distancia escogida
+  # y el numero de vecinos a tener en cuenta
   def __init__(self,k=3, distancia=Euclidea):
     self.k = k
     self.distancia = distancia
 
+    # Verificamos que la funcion de distancia escogida sea una de las permitidas
     if(self.distancia != Euclidea and self.distancia != Manhattan
                 and self.distancia != Mahalanobis): 
       print("Calculo de distancia no permitido.")
       exit()
       
-
+  # Durante el entrenamiento nos encargamos de normalizar aquellos atributos que sean de tipo decimal
+  # Para ello hacemos uso del moodulo Normalizar.py
   def entrenamiento(self, datos):
     aux = Normalizar()
     aux.calcularMediasDesv(datos.datos,datos.nominalAtributos)
     datos_aux = aux.normalizarDatos(datos.datos,datos.nominalAtributos)
     return datos_aux
   
+  # Usamos el modulo externo de Distancias.py para llevar a cabo los calculos sobre las funciones
+  # de distancia y para mas tarde recuperar las predicciones sobre las instancias escogidas
   def clasifica(self, datosTrain, datosTest):
     distancias = self.distancia(datosTrain, datosTest)
     predicciones = SeleccionKVecinos(datosTrain, distancias, self.k)
@@ -391,18 +397,21 @@ class ClasficadorRegresionLogistica(Clasificador):
   tasa_aprendizaje=None
   epocas=None
   frontera_decision=None
-  lista_aux=None
+  lista_decisiones=None
+
   # Recordemos que es recomendable que la tasa este entre -0.5 y 0.5
+  # Inicializamos la clase pasando el numero de epocas, que de manera predeterminada esta a 10,
+  # y la tasa de aprendizaje que se encuentra en el 0.2 de serie
+  # Ademas inicializamos el array de decisiones de posibles valores
   def __init__(self,t_aprendizaje=0.2,epocas=10):
     self.tasa_aprendizaje = t_aprendizaje
     self.epocas = epocas
-    self.lista_aux=[]
+    self.lista_decisiones=[]
   
   def incializarFrontera(self):
     # Inicializamos los valores de la frontera aleatoriamente entre -0.5 y 0.5
     # Plantamos semilla
     random.seed(0)
-
     for i in range(len(self.frontera_decision)):
       self.frontera_decision[i] = random.uniform(-0.5,0.5)
 
@@ -414,8 +423,8 @@ class ClasficadorRegresionLogistica(Clasificador):
 
     # Guardamos las clases para luego despues de realizar la sigmoidal asignar en el cambio de peso la clase correspondiente
     for i in range(len(datos)):
-      if datos[i][atributos_vector_X-1] not in self.lista_aux:
-        self.lista_aux.append(datos[i][atributos_vector_X-1])
+      if datos[i][atributos_vector_X-1] not in self.lista_decisiones:
+        self.lista_decisiones.append(datos[i][atributos_vector_X-1])
 
     for i in range(self.epocas):
       for j in range(len(datos)):
@@ -439,7 +448,7 @@ class ClasficadorRegresionLogistica(Clasificador):
 
         # Hacemos la correccion de frontera
         # Valor sigmoide - clase
-        if(datos[j][-1] == self.lista_aux[0]):
+        if(datos[j][-1] == self.lista_decisiones[0]):
           t=1.0
         else:
           t=0.0
@@ -455,15 +464,19 @@ class ClasficadorRegresionLogistica(Clasificador):
           else:
             vector_X_aux[k] = float(datos[j][k-1])*parte_auxiliar
 
+          # Generamos la nueva frontera de decision asignando los nuevos valores a las componentes correspondientes
           self.frontera_decision[k] = self.frontera_decision[k] - vector_X_aux[k]
 
+    # Devolvemos la frontera de decision
     return self.frontera_decision
   
   def clasifica(self,datos):
     atributos_vector_X = len(datos[0])
+    
     # Creamos un array para almacenar las predicciones
     predicciones = []
-    # Recorremos todos las filas de datos
+    
+    # Recorremos todas las filas de datos
     for i in range(len(datos)):
       sumatorio = 0 # Sacamos el sumatorio de componentes del vector w por los atributos de la fila
       for k in range(atributos_vector_X): # Todos los atributos y Clase de la fila de datos
@@ -482,15 +495,16 @@ class ClasficadorRegresionLogistica(Clasificador):
           sigmoide = 0.0 # e^(-(-sumatorio)) siendo sumatorio menor que 0 ==> un numero extremadamente grande ==> 1/infinito ==> 0
 
       # Si P(X|C1) > 0.5
-      if sigmoide > 0.5: # La calculada en la sigmoide corresponde a la probabilidad de C1, entendemos que si esta es menor que 0,5 es por tanto menor que la C2 y por tanto el clasificador
+      if sigmoide > 0.5: # La calculada en la sigmoide corresponde a la probabilidad de C1, entendemos que si esta es menor que 0'5, entonces es menor que la C2 y por tanto el clasificador
                           # pensara que es de clase C2, y no de C1
-        sigmoide = self.lista_aux[0]
+        sigmoide = self.lista_decisiones[0]
       else:
-        sigmoide =self.lista_aux[1]
+        sigmoide =self.lista_decisiones[1]
 
       # Guardamos la prediccion
       predicciones.append(sigmoide)
     
+    # Devolvemos las predicciones realizadas
     return predicciones
 
 

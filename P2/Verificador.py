@@ -243,8 +243,6 @@ class Verificados_KVecinos(Verificador):
             fallos = (Y != self.pred).sum()
             return (float(fallos)/float(len(self.pred)))
 
-# Enlace que permite entende la diferencia entre ambos
-# https://stackoverflow.com/questions/43961225/sgdclassifier-vs-logisticregression-with-sgd-solver-in-scikit-learn-library#:~:text=Logistic%20Regression%20in%20Sklearn%20doesn,Gradient%20Descent%20as%20a%20solver.
 # La diferencia es que LogisticRegression usa el metodo convencional para minimizar la funcion de coste, usando las 
 # regularizaciones Lasso para ello. Por el contrario, SGDClassifier, es un clasififcador lineal generalizado,
 # que usa el descenso del grandiente como resolucion. 

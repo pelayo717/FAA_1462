@@ -95,6 +95,8 @@ def Mahalanobis(datosTrain, datosTest):
   return distancias_totales
 
 
+# Esta funcion busca una vez relizados los calculos, seleccionar aquellos vecinos con menor 
+# distancia, teniendo en cuenta posibles empates y presentando una solucion valida
 def SeleccionKVecinos(datosTrain, distancias, k):
   tamanioTest = len(distancias)
   predicciones = []
