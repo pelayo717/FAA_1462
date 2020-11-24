@@ -189,6 +189,19 @@ class Clasificador:
         media_tn += tn
         media_fn += fn
 
+  ######################################## Algoritmo Genetico ##########################################
+
+    if(isinstance(self, ClasficadorAlgoritmoGenetico) == True):
+      lista_particiones = particionado.creaParticiones(dataset)
+
+      # Generamos la poblacion inicial
+      self.inizializarPoblacion(dataset)
+
+
+      media_error, media_tp, media_fp, media_tn, media_fn = 0 # Para una primera ejecucion
+
+
+
     # Calculamos las medias 
     media_error = media_error / len(lista_particiones)
     media_tp =  media_tp / len(lista_particiones)
@@ -509,8 +522,60 @@ class ClasficadorRegresionLogistica(Clasificador):
 
 
 
-          
+##############################################################################
 
+class ClasficadorAlgoritmoGenetico(Clasificador):
 
+  tamanio_poblacion=None          # Numero de individuos de la poblacion
+  condicion_terminacion=None      # Numero de etapas maxima para la finalizacion
+  maximo_reglas_individuo=None    # Numero maximo de reglas que puede tener un individuo
+  elitismo = None                 # % de elitismo para pasar en la Seleccion de Progenitores
+  poblacion = []                  # Poblacion del algoritmo
+  valoresXAtributo = []           # Array con la cantidad de valores que pueden tomar los atributos del dataset
+  longuitud_regla = 0             # Tamanio de las reglas de los individuos
+  
+  # Inicializamos el clasificador, pasandole como argumentos el tamanio de la poblacion, 
+  # la condicion de finalizacion (num de epocas) y el maximo numero de reglas que puede
+  # tener un individuo.
 
+  def __init__(self, tamanio, condicion, reglas):
+    self.tamanio_poblacion = tamanio
+    self.condicion_terminacion = condicion
+    self.maximo_reglas_individuo = reglas
+
+    self.elitismo = 5 # Por defecto, elegimos un 5% de elitismo
+
+  # Generacion de la poblacion inicial
+  def inizializarPoblacion(self, datos):
+    numAtributos = len(datos.atributos) # Cantidad de atributos del dataset
+    valoresAtributos = []               # Array con la cantidad de posibles valores que toman los 
+                                        # atributos según su posicion
+
+    # Se da por hecho que todos los atributos serán de tipo nominal
+    for atributo in datos.atributos[:-1]:
+      tam = len(datos.diccionario[atributo])
+      self.valoresXAtributo.append(tam)
+    self.valoresXAtributo.append(1) # Para la clase
+    self.longuitud_regla = sum(self.valoresXAtributo)
+
+    # Para cada uno de los miembros de la poblacion
+    for i in range(self.tamanio_poblacion):
+      individuo = []
+
+      # Generamos de forma aleatoria el numero de reglas que va a tener
+      num_reglas = random.randint(1, self.maximo_reglas_individuo)
+
+      # Para cada una de esas reglas
+      for j in range(num_reglas):
+        regla = ['0'] * self.longuitud_regla
+        
+        # Para cada uno de los bits de cada regla
+        for k in range(self.longuitud_regla):
+          # Generamos un numero aleatorio entre 0 y 1
+          x = random.randint(0,1)
+          regla[k] = str(x)
+        
+        individuo.append(regla)
+
+      self.poblacion.append(individuo)                                
   
