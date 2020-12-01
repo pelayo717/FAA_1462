@@ -197,8 +197,9 @@ class Clasificador:
       # Generamos la poblacion inicial
       self.inizializarPoblacion(dataset)
 
+      
 
-      media_error, media_tp, media_fp, media_tn, media_fn = 0 # Para una primera ejecucion
+      """media_error, media_tp, media_fp, media_tn, media_fn = 0 # Para una primera ejecucion
 
 
 
@@ -209,7 +210,7 @@ class Clasificador:
     media_tn =  media_tn / len(lista_particiones)
     media_fn =  media_fn / len(lista_particiones)
 
-    return media_error, media_tp, media_fp, media_tn, media_fn
+    return media_error, media_tp, media_fp, media_tn, media_fn"""
 
 ##############################################################################
 
@@ -248,13 +249,13 @@ class ClasificadorNaiveBayes(Clasificador):
     for k in range (num_atributos):
       nombre_atributo=datostotales.atributos[k]
 
-      #Atributo nominal o entero
+      # Atributo nominal o entero
       if(datostotales.nominalAtributos[k] == True): #Caso de Nominal
-        #Matriz y conteo(debemos saber clases en eje Y y posibles valores en eje X)
+        # Matriz y conteo(debemos saber clases en eje Y y posibles valores en eje X)
         nombres_clases=[]
         valores_clases=[] #Eje Y
         for m in range (len(datostotales.diccionario["Class"])):
-          #Valor de la clase recuperada
+          # Valor de la clase recuperada
           nombres_clases.append(list(datostotales.diccionario["Class"].items())[m][0])
           valores_clases.append(list(datostotales.diccionario["Class"].items())[m][1])
 
@@ -263,7 +264,7 @@ class ClasificadorNaiveBayes(Clasificador):
           if(list(datostotales.diccionario[nombre_atributo].items())[n][1] not in valores_posibles):
             valores_posibles.append(list(datostotales.diccionario[nombre_atributo].items())[n][1])
 
-        #Creamos matriz de dimensiones especificas
+        # Creamos matriz de dimensiones especificas
         matriz_atributo= np.empty((len(valores_clases), len(valores_posibles)))
         for l in range(len(valores_clases)):
           valores_columna=[]
@@ -274,7 +275,7 @@ class ClasificadorNaiveBayes(Clasificador):
           for p in range(len(valores_posibles)):
             matriz_atributo[l][p]=collections.Counter(valores_columna)[valores_posibles[p]]
 
-        #Laplace
+        # Laplace
         if(laplace == True):
           if(np.count_nonzero(matriz_atributo) != len(valores_clases)*len(valores_posibles)): #No hay ceros
             matriz_atributo = matriz_atributo + 1
@@ -549,9 +550,9 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
   def inizializarPoblacion(self, datos):
     numAtributos = len(datos.atributos) # Cantidad de atributos del dataset
     valoresAtributos = []               # Array con la cantidad de posibles valores que toman los 
-                                        # atributos según su posicion
+                                        # atributos segun su posicion
 
-    # Se da por hecho que todos los atributos serán de tipo nominal
+    # Se da por hecho que todos los atributos seran de tipo nominal
     for atributo in datos.atributos[:-1]:
       tam = len(datos.diccionario[atributo])
       self.valoresXAtributo.append(tam)
@@ -567,15 +568,45 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
       # Para cada una de esas reglas
       for j in range(num_reglas):
-        regla = ['0'] * self.longuitud_regla
+        regla = np.zeros(self.longuitud_regla,dtype=int)
         
         # Para cada uno de los bits de cada regla
         for k in range(self.longuitud_regla):
           # Generamos un numero aleatorio entre 0 y 1
           x = random.randint(0,1)
-          regla[k] = str(x)
+          regla[k] = x
         
         individuo.append(regla)
 
-      self.poblacion.append(individuo)                                
-  
+      self.poblacion.append(individuo)
+
+  def cruce(self, progenitor1, progenitor2):
+
+    # Sacamos el numero de reglas del progenitor 1
+    num_reglas_p1 = len(progenitor1)
+    rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
+
+    # Sacamos el numero de reglas del progenitor 2
+    num_reglas_p2 = len(progenitor2)
+    rand_reglas_p2 = random.randint(0,num_reglas_p2-1)
+
+    # Punto de cruce aleatorio
+    pto_cruce = random.randint(0,self.longuitud_regla-1)
+    
+    # Inicializacion de los hijos
+    descendiente_p1 = np.copy(progenitor1)
+
+    #print(progenitor1)
+    #print(descendiente_p1)
+
+    # Procedemos a cruzar
+    #parte_cambio = progenitor1[rand_reglas_p1][0]
+
+    # Me falta hacer el cruce LAIO para LAIO
+
+
+  def entrenamiento():
+    print("Entrenamiento")
+
+  def clasifica():
+    print("Clasifica")

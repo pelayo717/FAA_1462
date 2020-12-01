@@ -1,5 +1,5 @@
 from Datos import Datos
-from EstrategiaParticionado import ValidacionSimple
+from EstrategiaParticionado import *
 from Clasificador import *
 from Distancias import *
 from Verificador import *
@@ -21,5 +21,11 @@ if __name__ == "__main__":
     ag = ClasficadorAlgoritmoGenetico(10, 100, 5)
 
     medias = ag.validacion(validacion_simple, datos_titanic)
+
+    aux1 = ag.poblacion[0]
+
+    aux2 = ag.poblacion[1]
+
+    ag.cruce(aux1,aux2)
 
     
