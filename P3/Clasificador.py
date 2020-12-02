@@ -552,6 +552,8 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     valoresAtributos = []               # Array con la cantidad de posibles valores que toman los 
                                         # atributos segun su posicion
 
+    random.seed(0) # Inicializamos la semilla, necesaria para el uso de rand
+
     # Se da por hecho que todos los atributos seran de tipo nominal
     for atributo in datos.atributos[:-1]:
       tam = len(datos.diccionario[atributo])
@@ -582,6 +584,8 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
   def cruce(self, progenitor1, progenitor2):
 
+    random.seed(0) # Plantamos la semilla necesaria para el uso de rand
+
     # Sacamos el numero de reglas del progenitor 1
     num_reglas_p1 = len(progenitor1)
     rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
@@ -592,18 +596,25 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
     # Punto de cruce aleatorio
     pto_cruce = random.randint(0,self.longuitud_regla-1)
-    
+
     # Inicializacion de los hijos
-    descendiente_p1 = np.copy(progenitor1)
+    descendiente1 = []
+    for i in range(num_reglas_p1):
+      descendiente1.append(np.copy(progenitor1[i]))
+    
+    descendiente2 = []
+    for i in range(num_reglas_p2):
+      descendiente2.append(np.copy(progenitor2[i]))
+    
+    # Procedemos a cruzar en el descendiente1 en la regla concreta, la parte del progenitor 2 correspondiente
+    descendiente1[rand_reglas_p1][pto_cruce:] = progenitor2[rand_reglas_p2][pto_cruce:]
+    descendiente2[rand_reglas_p2][pto_cruce:] = progenitor1[rand_reglas_p1][pto_cruce:]
 
-    #print(progenitor1)
-    #print(descendiente_p1)
-
-    # Procedemos a cruzar
-    #parte_cambio = progenitor1[rand_reglas_p1][0]
-
-    # Me falta hacer el cruce LAIO para LAIO
-
+    print(pto_cruce)
+    print(progenitor1)
+    print(progenitor2)
+    print(descendiente1)
+    print(descendiente2)
 
   def entrenamiento():
     print("Entrenamiento")
