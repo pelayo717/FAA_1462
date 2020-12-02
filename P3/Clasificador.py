@@ -582,39 +582,162 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
       self.poblacion.append(individuo)
 
-  def cruce(self, progenitor1, progenitor2):
+  def cruce(self, tipo="intra", progenitor1=None, progenitor2=None):
 
     random.seed(0) # Plantamos la semilla necesaria para el uso de rand
 
-    # Sacamos el numero de reglas del progenitor 1
-    num_reglas_p1 = len(progenitor1)
-    rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
+    if(tipo == "intra"): # Cruce en un punto entre progenitores
+      
+      # Sacamos el numero de reglas del progenitor 1 y escogemos aleatoriamente una regla para el progenitor 1
+      num_reglas_p1 = len(progenitor1)
+      rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
 
-    # Sacamos el numero de reglas del progenitor 2
-    num_reglas_p2 = len(progenitor2)
-    rand_reglas_p2 = random.randint(0,num_reglas_p2-1)
+      # Sacamos el numero de reglas del progenitor 2 y escogemos aleatoriamente una regla para el progenitor 2
+      num_reglas_p2 = len(progenitor2)
+      rand_reglas_p2 = random.randint(0,num_reglas_p2-1)
 
-    # Punto de cruce aleatorio
-    pto_cruce = random.randint(0,self.longuitud_regla-1)
+      # Sacamos un punto de cruce aleatorio
+      pto_cruce = random.randint(0,self.longuitud_regla-1)
 
-    # Inicializacion de los hijos
-    descendiente1 = []
-    for i in range(num_reglas_p1):
-      descendiente1.append(np.copy(progenitor1[i]))
+      # Inicializacion de los hijos (copiando los datos de cada progenitor)
+      descendiente1 = []
+      for i in range(num_reglas_p1):
+        descendiente1.append(np.copy(progenitor1[i]))
+      
+      descendiente2 = []
+      for i in range(num_reglas_p2):
+        descendiente2.append(np.copy(progenitor2[i]))
+      
+      # Procedemos a cruzar en el descendiente1 en la regla concreta, la parte del progenitor 2 correspondiente y viceversa
+      descendiente1[rand_reglas_p1][pto_cruce:] = progenitor2[rand_reglas_p2][pto_cruce:]
+      descendiente2[rand_reglas_p2][pto_cruce:] = progenitor1[rand_reglas_p1][pto_cruce:]
+
+    elif(tipo == "inter"): # Cruce intra-reglas (escogemos aleatoriamente la regla que se intercambiara y la cambiamos en cada descendiente)
+      
+      # Sacamos el numero de reglas del progenitor 1 y escogemos aleatoriamente una regla para el progenitor 1
+      num_reglas_p1 = len(progenitor1)
+      rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
+
+      # Sacamos el numero de reglas del progenitor 2 y escogemos aleatoriamente una regla para el progenitor 2
+      num_reglas_p2 = len(progenitor2)
+      rand_reglas_p2 = random.randint(0,num_reglas_p2-1)
+
+      # Inicializacion de los hijos (copiando los datos de cada progenitor)
+      descendiente1 = []
+      for i in range(num_reglas_p1):
+        descendiente1.append(np.copy(progenitor1[i]))
+      
+      descendiente2 = []
+      for i in range(num_reglas_p2):
+        descendiente2.append(np.copy(progenitor2[i]))
+
+      # Cambiamos en el descendiente 1, la regla del progenitor 2
+      descendiente1[rand_reglas_p1] = progenitor2[rand_reglas_p2]
+
+      # Cambiamos en el descendiente 2, la regla del progenitor 1
+      descendiente2[rand_reglas_p2] = progenitor1[rand_reglas_p1]
     
-    descendiente2 = []
-    for i in range(num_reglas_p2):
-      descendiente2.append(np.copy(progenitor2[i]))
-    
-    # Procedemos a cruzar en el descendiente1 en la regla concreta, la parte del progenitor 2 correspondiente
-    descendiente1[rand_reglas_p1][pto_cruce:] = progenitor2[rand_reglas_p2][pto_cruce:]
-    descendiente2[rand_reglas_p2][pto_cruce:] = progenitor1[rand_reglas_p1][pto_cruce:]
+    else:
+      print(">> La configuracion escogida para el cruce no se permite")
 
-    print(pto_cruce)
-    print(progenitor1)
-    print(progenitor2)
-    print(descendiente1)
-    print(descendiente2)
+
+    # HABRIA QUE CHEQUEAR LAS NUEVAS REGLAS, PARA QUE NINGUNA FUERA LA UNIDAD O CERO
+    # ANIADIMOS LOS DOS NUEVOS DESCENDIENTES A LA POBLACION ?
+
+      
+  def mutacion(self, tipo_mutacion="estandar",estandar="basica", prob_mutacion=0.5, progenitor=None):
+
+    random.seed(0) # Plantamos la semilla necesaria para el uso de rand
+
+    if(tipo_mutacion == "estandar" and estandar == "basica"):
+
+      # Sacamos el numero de reglas del progenitor y escogemos una al azar
+      num_reglas_p1 = len(progenitor)
+      rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
+
+      # Inicializacion del descendiente (copiamos las reglas del progenitor)
+      descendiente = []
+      for i in range(num_reglas_p1):
+        descendiente.append(np.copy(progenitor[i]))
+
+      # Recorremos la regla cambiando aquellos bits que consideremos
+      for i in range(len(descendiente[rand_reglas_p1])):
+        if(random.uniform(0,1) > prob_mutacion):
+          if(descendiente[rand_reglas_p1][i] == 1):
+            descendiente[rand_reglas_p1][i] = 0
+          else:
+            descendiente[rand_reglas_p1][i] = 1
+      
+
+    elif(tipo_mutacion == "estandar" and estandar == "completa"):
+      
+      # Sacamos el numero de reglas del progenitor
+      num_reglas_p1 = len(progenitor)
+
+      # Inicializacion del descendiente (copiamos las reglas del progenitor)
+      descendiente = []
+      for i in range(num_reglas_p1):
+        descendiente.append(np.copy(progenitor[i]))
+
+      # Recorremos la regla cambiando aquellos bits que consideremos
+      for h in range(num_reglas_p1):
+        for i in range(self.longuitud_regla):
+          if(random.uniform(0,1) > prob_mutacion):
+            if(descendiente[h][i] == 1):
+              descendiente[h][i] = 0
+            else:
+              descendiente[h][i] = 1
+
+    elif(tipo_mutacion == "aniadir"):
+      
+      # Sacamos el numero de reglas del progenitor
+      num_reglas_p1 = len(progenitor)
+
+      # Inicializacion del descendiente (copiamos las reglas del progenitor)
+      descendiente = []
+      for i in range(num_reglas_p1):
+        descendiente.append(np.copy(progenitor[i]))
+
+      # Creamos la nueva regla, inicializandola toda a 0's
+      regla = np.zeros(self.longuitud_regla,dtype=int)
+
+      # Para cada uno de los bits de cada regla
+      for k in range(self.longuitud_regla):
+        # Generamos un numero aleatorio entre 0 y 1
+        x = random.randint(0,1)
+        regla[k] = x
+      
+      # Aniadimos la nueva regla al descendiente
+      descendiente.append(regla)
+
+    elif(tipo_mutacion == "borrar"):
+      
+      # Sacamos el numero de reglas del progenitor
+      num_reglas_p1 = len(progenitor)
+
+      # Comprobamos que el individuo tenga mas de una regla, ya que en caso contrario habria que eliminar el descendiente (no anidirlo) de la poblacion
+      if(num_reglas_p1 > 1):
+      
+        # Inicializacion del descendiente (copiamos las reglas del progenitor)
+        descendiente = []
+        for i in range(num_reglas_p1):
+          descendiente.append(np.copy(progenitor[i]))
+
+        # Sacamos aleatoriamente la regla que se va a borrar
+        rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
+
+        # Procedemos a eliminarla del descendiente
+        #descendiente.remove(progenitor[rand_reglas_p1]) FALLO NO COMPRENDO
+
+      else:
+        print("Individuo eliminado (falta quitar de la poblacion)")
+
+    else:
+      print(">> La configuracion escogida para la mutacion no se permite")
+
+
+
+    
 
   def entrenamiento():
     print("Entrenamiento")

@@ -26,6 +26,7 @@ if __name__ == "__main__":
 
     aux2 = ag.poblacion[1]
 
-    ag.cruce(aux1,aux2)
+    ag.cruce("intra",aux1,aux2)
 
+    ag.mutacion("borrar",None,0.5,aux1)
     
