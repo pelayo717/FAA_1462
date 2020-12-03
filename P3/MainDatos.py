@@ -19,17 +19,24 @@ if __name__ == "__main__":
     validacion_cruzada = ValidacionCruzada(6)
 
     ag = ClasficadorAlgoritmoGenetico( 
-                        tam_poblacion=10, cond_terminacion=100, max_reglas=5, 
+                        tam_poblacion=30, cond_terminacion=150, max_reglas=15, 
                         tipo_cruce = 0, tipo_mutacion=0, prob_cruce=0.25, 
                         prob_mutacion=0.05)
 
-    medias = ag.validacion(validacion_simple, datos_titanic)
+    medias = ag.validacion(validacion_simple, datos_titanic, filename="ConjuntosDatos/titanic.data")
 
-    aux1 = ag.poblacion[0]
 
-    aux2 = ag.poblacion[1]
+    mx1 = MatrizConfusion()
 
-    ag.cruce_intra(aux1, aux2)
-
-    ag.mutacion_bitflip(aux1)
+    print("\nAlgoritmo Genetico: " + str(medias[0]))
+    tpr, fpr = mx1.matrix_media(medias[1], 
+        medias[1], 
+        medias[2], 
+        medias[2],
+        medias[3], 
+        medias[3],
+        medias[4], 
+        medias[4])
     
+    plot_points = [[fpr, tpr, 'AG']]
+    mx1.plot(plot_points, "Titanic")

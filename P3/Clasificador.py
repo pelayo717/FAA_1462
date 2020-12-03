@@ -7,6 +7,7 @@ import collections
 import random
 from Normalizar import *
 from Distancias import *
+from Verificador import *
 
 class Clasificador:
   
@@ -60,7 +61,7 @@ class Clasificador:
     
     
   # Realiza una clasificacion utilizando una estrategia de particionado determinada
-  def validacion(self, particionado, dataset, laplace=False, normalizacion_knn=True,seed=None):
+  def validacion(self, particionado, dataset, laplace=False, normalizacion_knn=True,seed=None, filename=None):
     # Creamos las particiones siguiendo la estrategia llamando a particionado.creaParticiones
     # - Para validacion cruzada: en el bucle hasta nv entrenamos el clasificador con la particion de train i
     # y obtenemos el error en la particion de test i
@@ -192,14 +193,34 @@ class Clasificador:
   ######################################## Algoritmo Genetico ##########################################
 
     if(isinstance(self, ClasficadorAlgoritmoGenetico) == True):
+      datos_tabla_train = []
+      datos_tabla_test = []
       lista_particiones = particionado.creaParticiones(dataset)
+      media_error = 0.0
+      media_tp = 0.0
+      media_fp = 0.0
+      media_tn = 0.0
+      media_fn = 0.0
 
-      # Generamos la poblacion inicial
-      self.inizializarPoblacion(dataset)
+      # Codificamos los datos con One Hot
+      x = Verificador.preprocesado_OneHot(Verificador, filename)
       
+      # Creamos una tabla auxiliar con los datos de Train
+      datos_tabla_train = dataset.extraeDatos(lista_particiones[0].indicesTrain,x)
+      
+      # Creamos una tabla auxiliar con los datos de Test
+      datos_tabla_test = dataset.extraeDatos(lista_particiones[0].indicesTest,x)  
+      
+      mejor_individuo = self.entrenamiento(dataset, datos_tabla_train)
+      predicciones = self.clasifica(mejor_individuo, datos_tabla_test)
 
-      """media_error, media_tp, media_fp, media_tn, media_fn = 0 # Para una primera ejecucion
+      # Llamamos a la funcion de calculo del error y las tasas
+      tasa_acierto, tp, fp, tn, fn = self.error(datos_tabla_test, predicciones)
 
+      # Sumamos las tasas de fallo para calcular la media posteriormente
+      media_error += (1 - tasa_acierto)
+
+      return media_error, tp, fp, tn, fn
 
 
     # Calculamos las medias 
@@ -209,7 +230,7 @@ class Clasificador:
     media_tn =  media_tn / len(lista_particiones)
     media_fn =  media_fn / len(lista_particiones)
 
-    return media_error, media_tp, media_fp, media_tn, media_fn"""
+    return media_error, media_tp, media_fp, media_tn, media_fn
 
 ##############################################################################
 
@@ -424,7 +445,7 @@ class ClasficadorRegresionLogistica(Clasificador):
   def incializarFrontera(self):
     # Inicializamos los valores de la frontera aleatoriamente entre -0.5 y 0.5
     # Plantamos semilla
-    random.seed(0)
+    random.seed()
     for i in range(len(self.frontera_decision)):
       self.frontera_decision[i] = random.uniform(-0.5,0.5)
 
@@ -551,16 +572,16 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     self.prob_mutacion = prob_mutacion
 
     if tipo_cruce == 0:
-      self.cruce = cruce_intra
+      self.cruce = self.cruce_intra
     else:
-      self.cruce = cruce_inter
+      self.cruce = self.cruce_inter
 
     if tipo_mutacion == 0:
-      self.mutacion = mutacion_bitflip
+      self.mutacion = self.mutacion_bitflip
     elif tipo_mutacion == 1:
-      self.mutacion = mutacion_add_regla
+      self.mutacion = self.mutacion_add_regla
     else:
-      self.mutacion = mutacion_remove_regla
+      self.mutacion = self.mutacion_remove_regla
 
     self.elitismo = 5 # Por defecto, elegimos un 5% de elitismo
 
@@ -570,7 +591,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     valoresAtributos = []               # Array con la cantidad de posibles valores que toman los 
                                         # atributos segun su posicion
 
-    random.seed(0) # Inicializamos la semilla, necesaria para el uso de rand
+    random.seed() # Inicializamos la semilla, necesaria para el uso de rand
 
     # Se da por hecho que todos los atributos seran de tipo nominal
     for atributo in datos.atributos[:-1]:
@@ -611,7 +632,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
   def cruce_intra(self, progenitor1=None, progenitor2=None):
 
-    random.seed(0) # Plantamos la semilla necesaria para el uso de rand
+    random.seed() # Plantamos la semilla necesaria para el uso de rand
 
     # Comprobamos la probabilidad de cruce
     probabilidad = random.random()
@@ -643,7 +664,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
   def cruce_inter(self, progenitor1=None, progenitor2=None):
 
-    random.seed(0) # Plantamos la semilla necesaria para el uso de rand
+    random.seed() # Plantamos la semilla necesaria para el uso de rand
 
     # Comprobamos la probabilidad de cruce
     probabilidad = random.random()
@@ -669,7 +690,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       
   def mutacion_bitflip(self, progenitor=None):
 
-    random.seed(0) # Plantamos la semilla necesaria para el uso de rand
+    random.seed() # Plantamos la semilla necesaria para el uso de rand
     
 
     # Sacamos el numero de reglas del progenitor y escogemos una al azar
@@ -694,7 +715,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
 
   def mutacion_add_regla(self, progenitor=None):
-    random.seed(0) # Plantamos la semilla necesaria para el uso de rand
+    random.seed() # Plantamos la semilla necesaria para el uso de rand
 
     # Sacamos el numero de reglas del progenitor
     num_reglas_p1 = len(progenitor)
@@ -726,7 +747,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
 
   def mutacion_remove_regla(self, progenitor=None):
-    random.seed(0) # Plantamos la semilla necesaria para el uso de rand
+    random.seed() # Plantamos la semilla necesaria para el uso de rand
 
     # Sacamos el numero de reglas del progenitor
     num_reglas_p1 = len(progenitor)
@@ -739,10 +760,130 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
         # Elegimos una regla al azar
         rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
         progenitor.remove(progenitor[rand_reglas_p1])
+  
+
+  def fitness(self, datos, individuo):
+    atributos = self.valoresXAtributo[:-1]
+
+    aciertos = 0            # Numero de veces que una regla del individuo acierta
+    veces_activada = 0      # Numero de veces que una regla de un individuo se activa
+    
+    # Para cada uno de los datos de train
+    for dato in datos:
+
+      # Para cada una de las reglas del individuo
+      for regla in individuo:
+        
+        index_min = 0
+        activa = 1
+        # Para cada uno de los atributos de la regla
+        for atr in atributos:
+          
+          index_max = index_min + atr
+          # Si no se activa ese atributo, salimos del bucle (No se activa la regla)
+          if(not any(np.logical_and(regla[index_min:index_max], dato[index_min:index_max]))):
+            activa = 0
+            break
+          else:
+            index_min = index_min + atr
+
+        # Si la regla se ha activado
+        if activa:
+          # Si el ejemplo es de clase 0
+          if (dato[-1] == regla[-1]):
+            aciertos = aciertos + 1 
+
+          veces_activada = veces_activada + 1
+
+    # Si no se ha activado ninguna regla nunca
+    if veces_activada == 0:
+      return 0
+    else:
+      return aciertos/veces_activada    
+
+  def SeleccionProgenitores(self, datos):
+    resultados = []
+    
+    # Para cada uno de los individuos de la poblacion
+    for i in range(len(self.poblacion)):
+      fitness = self.fitness(datos, self.poblacion[i])
+      resultados.append([fitness, i])
+
+    # Ordenamos la lista de mayor a menor fitness
+    resultados.sort(reverse=True)
+
+    # Devolvemos una lista con el indice y el fitness de cada individuo
+    return resultados
+
+
+  def entrenamiento(self, datos, datos_train_OneHot):
+
+    # Generamos la poblacion inicial
+    self.inizializarPoblacion(datos)
+
+    for k in range(self.condicion_terminacion):
+    
+      # Calculamos el fitness de los individuos
+      fitness_individuos = self.SeleccionProgenitores(datos_train_OneHot)
+
+      # Escogemos de forma elitista los mejores individuos
+      num_mejores = math.ceil((self.elitismo/100)*self.tamanio_poblacion) # Estos no se mutaran ni cortaran
+      
+      # Para el resto de individuos
+      for i in range(num_mejores, len(fitness_individuos)-1, 2):
+        individuo1 = self.poblacion[fitness_individuos[i][1]]
+        individuo2 = self.poblacion[fitness_individuos[i+1][1]]
+
+        # Cruzamos los individuos
+        self.cruce(individuo1, individuo2)
+
+        # Mutamos los individuos
+        self.mutacion(individuo1)
+        self.mutacion(individuo2)
     
 
-  def entrenamiento():
-    print("Entrenamiento")
+    # Devolvemos el individuo con mayor fitness    
+    fitness_individuos = self.SeleccionProgenitores(datos_train_OneHot)
 
-  def clasifica():
-    print("Clasifica")
+    return self.poblacion[fitness_individuos[0][1]]
+    
+
+  def clasifica(self, individuo, datos_test_OneHot):
+    atributos = self.valoresXAtributo[:-1]
+    predicciones = []
+    
+    # Para cada uno de los ejemplos de test
+    for test in datos_test_OneHot:
+      clases = []
+
+      # Para cada una de las reglas del individuo
+      for regla in individuo:
+        
+        index_min = 0
+        activa = 1
+
+        # Para cada uno de los atributos de la regla
+        for atr in atributos:
+          
+          index_max = index_min + atr
+          # Si no se activa ese atributo, salimos del bucle (No se activa la regla)
+          if(not any(np.logical_and(regla[index_min:index_max], test[index_min:index_max]))):
+            activa = 0
+            break
+          else:
+            index_min = index_min + atr
+
+        # Si la regla se ha activado
+        if activa:
+          clases.append(regla[-1])
+
+      # Si no se ha activado ninguna regla, se predice por defecto 0
+      if not clases:
+        clases.append(0)
+      
+      # Seleccionamos la prediccion más abundante
+      # Predice la clase que mas se repita
+      predice = max(set(clases), key=clases.count)
+      predicciones.append(predice)
+
+    return predicciones
