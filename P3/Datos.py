@@ -13,7 +13,7 @@ class Datos:
     def __init__(self, nombreFichero):
 
         # Leemos del fichero csv los datos 
-        datosEntrada = pd.read_csv(nombreFichero)
+        datosEntrada = pd.read_csv(nombreFichero, dtype=str)
 
         #=============================== ATRIBUTOS ======================================= #
 
@@ -33,11 +33,11 @@ class Datos:
             aux = datosEntrada.values[0][i]
 
             # casteamos si es posible de string ==> float (incluimos reales y enteros)
-            try:
+            """try:
                 float(aux)
                 self.nominalAtributos[i] = False
-            except ValueError:
-                self.nominalAtributos[i] = True    
+            except ValueError:"""
+            self.nominalAtributos[i] = True    
 
 
         # =========================== DICCIONARIO ============================ #

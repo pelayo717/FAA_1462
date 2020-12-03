@@ -18,7 +18,10 @@ if __name__ == "__main__":
 
     validacion_cruzada = ValidacionCruzada(6)
 
-    ag = ClasficadorAlgoritmoGenetico(10, 100, 5)
+    ag = ClasficadorAlgoritmoGenetico( 
+                        tam_poblacion=10, cond_terminacion=100, max_reglas=5, 
+                        tipo_cruce = 0, tipo_mutacion=0, prob_cruce=0.25, 
+                        prob_mutacion=0.05)
 
     medias = ag.validacion(validacion_simple, datos_titanic)
 
@@ -26,7 +29,7 @@ if __name__ == "__main__":
 
     aux2 = ag.poblacion[1]
 
-    ag.cruce("intra",aux1,aux2)
+    ag.cruce_intra(aux1, aux2)
 
-    ag.mutacion("borrar",None,0.5,aux1)
+    ag.mutacion_bitflip(aux1)
     
