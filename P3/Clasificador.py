@@ -566,8 +566,8 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
   # la condicion de finalizacion (num de epocas) y el maximo numero de reglas que puede
   # tener un individuo.
 
-  def __init__(self, tam_poblacion, cond_terminacion, max_reglas, 
-              tipo_cruce, tipo_mutacion, prob_cruce, prob_mutacion):
+  def __init__(self, tam_poblacion=100, cond_terminacion=150, max_reglas=25, 
+              tipo_cruce=0, tipo_mutacion=0, prob_cruce=0.25, prob_mutacion=0.05):
     self.tamanio_poblacion = tam_poblacion
     self.condicion_terminacion = cond_terminacion
     self.maximo_reglas_individuo = max_reglas
@@ -802,7 +802,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     #if veces_activada == 0:
       #return 0
     #else:
-    return aciertos/len(datos)    
+    return round(float(aciertos)/float(len(datos)),2) 
 
   def SeleccionProgenitores(self, datos):
     resultados = []
