@@ -796,10 +796,10 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
           veces_activada = veces_activada + 1
 
     # Si no se ha activado ninguna regla nunca
-    if veces_activada == 0:
-      return 0
-    else:
-      return aciertos/veces_activada    
+    #if veces_activada == 0:
+      #return 0
+    #else:
+    return aciertos/len(datos)    
 
   def SeleccionProgenitores(self, datos):
     resultados = []
@@ -825,6 +825,8 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     
       # Calculamos el fitness de los individuos
       fitness_individuos = self.SeleccionProgenitores(datos_train_OneHot)
+
+      print("Mejor fitness: " + str(fitness_individuos[0][0]))
 
       # Escogemos de forma elitista los mejores individuos
       num_mejores = math.ceil((self.elitismo/100)*self.tamanio_poblacion) # Estos no se mutaran ni cortaran
