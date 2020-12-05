@@ -202,8 +202,11 @@ class Clasificador:
       media_tn = 0.0
       media_fn = 0.0
 
+      # Creamos instancia de Verificador Para realizar el preprocesado One Hot
+      verificador = Verificador_AlgoritmosGeneticos()
+
       # Codificamos los datos con One Hot
-      x = Verificador.preprocesado_OneHot(Verificador, filename)
+      x = verificador.preprocesado_OneHot(filename)
       
       # Creamos una tabla auxiliar con los datos de Train
       datos_tabla_train = dataset.extraeDatos(lista_particiones[0].indicesTrain,x)
@@ -832,7 +835,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       num_mejores = math.ceil((self.elitismo/100)*self.tamanio_poblacion) # Estos no se mutaran ni cortaran
       
       # Para el resto de individuos
-      for i in range(num_mejores, len(fitness_individuos)-1, 2):
+      for i in range(int(num_mejores), len(fitness_individuos)-1, 2):
         individuo1 = self.poblacion[fitness_individuos[i][1]]
         individuo2 = self.poblacion[fitness_individuos[i+1][1]]
 
@@ -883,7 +886,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       if not clases:
         clases.append(0)
       
-      # Seleccionamos la prediccion más abundante
+      # Seleccionamos la prediccion mas abundante
       # Predice la clase que mas se repita
       predice = max(set(clases), key=clases.count)
       predicciones.append(predice)

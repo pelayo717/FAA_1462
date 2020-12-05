@@ -353,3 +353,9 @@ class Verificados_RegresionLogistica_SGD(Verificador):
             # Hallamos el numero de fallos y retornamos
             fallos = (Y != self.pred).sum()
             return (float(fallos)/float(len(self.pred)))
+
+
+class Verificador_AlgoritmosGeneticos(Verificador):
+
+    def __init__(self):
+        return
