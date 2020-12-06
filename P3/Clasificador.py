@@ -756,7 +756,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     num_reglas_p1 = len(progenitor)
 
     # Si el progenitor tiene al menos dos reglas
-    if(num_reglas_p1 > 2):
+    if(num_reglas_p1 >= 2): 
       # Comprobamos la probabilidad de mutacion del individuo
       if(random.random() <= self.prob_mutacion):
 
