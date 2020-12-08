@@ -18,6 +18,7 @@ if __name__ == "__main__":
 
     validacion_cruzada = ValidacionCruzada(6)
 
+<<<<<<< HEAD
     ag = ClasficadorAlgoritmoGenetico( 
                         tam_poblacion=100, cond_terminacion=150, max_reglas=35, 
                         tipo_cruce = 0, tipo_mutacion=0, prob_cruce=1, 
@@ -37,6 +38,36 @@ if __name__ == "__main__":
         medias[3],
         medias[4], 
         medias[4])
+=======
+    # Abrimos un fichero de resultados para albergar y automatizar el proceso
+    fp = open("resultados_poblacion.txt","wb")
+    fp.write("Pobla|Term|Max|Cruce|Mutacion|ProbCruce|ProbMutaci|AlgGenetico")
     
-    plot_points = [[fpr, tpr, 'AG']]
-    mx1.plot(plot_points, "Titanic")
+>>>>>>> e32a77d778b8e063c23999aa5d574e1beff648e3
+    
+    aux=10
+    while(aux <= 100):
+
+        ag = ClasficadorAlgoritmoGenetico( 
+                            tam_poblacion=aux, cond_terminacion=150, max_reglas=25, 
+                            tipo_cruce = 0, tipo_mutacion=0, prob_cruce=0.25, 
+                            prob_mutacion=0.05)
+
+        medias = ag.validacion(validacion_simple, datos_titanic, filename="ConjuntosDatos/titanic.data")
+
+        fp.write(str(aux)+ "|150|25|0|0|0.25|0.05|" + str(medias[0]))
+        aux+=10
+        #mx1 = MatrizConfusion()
+        #print("\nAlgoritmo Genetico: " + str(medias[0]))
+        """tpr, fpr = mx1.matrix_media(medias[1], 
+            medias[1], 
+            medias[2], 
+            medias[2],
+            medias[3], 
+            medias[3],
+            medias[4], 
+            medias[4])
+        
+        plot_points = [[fpr, tpr, 'AG']]
+        mx1.plot(plot_points, "Titanic")"""
+    fp.close()
