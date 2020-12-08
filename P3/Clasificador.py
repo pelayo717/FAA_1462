@@ -773,6 +773,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     
     # Para cada uno de los datos de train
     for dato in datos:
+      predice = []
 
       # Para cada una de las reglas del individuo
       for regla in individuo:
@@ -792,11 +793,25 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
         # Si la regla se ha activado
         if activa:
-          # Si el ejemplo es de clase 0
-          if (dato[-1] == regla[-1]):
-            aciertos = aciertos + 1 
+          # Guardamos su prediccion
+          predice.append(regla[-1])
 
-          veces_activada = veces_activada + 1
+      # Comprobamos qué clase predice mayoritariamente
+      if predice:
+        clase_0 = predice.count(0)
+        clase_1 = predice.count(1)
+
+        # Si se predice clase 0
+        if clase_0 > clase_1:
+          if dato[-1] == 0:      
+            aciertos = aciertos + 1
+        # Si se predice clase 1
+        elif clase_0 < clase_1:
+          if dato[-1] == 1:
+            aciertos = aciertos + 1 
+      
+      # Si no se ha activado ninguna regla o se predice el mismo numero de clase 1 que de 0,
+      # se cuenta como un fallo. 
 
     # Si no se ha activado ninguna regla nunca
     #if veces_activada == 0:
