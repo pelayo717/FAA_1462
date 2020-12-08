@@ -796,7 +796,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
           # Guardamos su prediccion
           predice.append(regla[-1])
 
-      # Comprobamos qué clase predice mayoritariamente
+      # Comprobamos que clase predice mayoritariamente
       if predice:
         clase_0 = predice.count(0)
         clase_1 = predice.count(1)
