@@ -1,0 +1,32 @@
+Combinacion:
+    tam_poblacion=50, cond_terminacion=150, max_reglas=50, tipo_cruce = 0, tipo_mutacion=0, 
+    prob_cruce=0.5, prob_mutacion=0.2
+
+    Mejor fitness: 0,67
+    Algoritmo Genetico: 0.3639846743295019
+    Matriz Confusion        Real
+              |   1    31.0  13.0
+    Estimado  |   0    82.0  135.0
+
+----------------------------------------------------------------------------------
+
+Combinacion:
+    tam_poblacion=50, cond_terminacion=150, max_reglas=35, tipo_cruce = 0, tipo_mutacion=0, 
+    prob_cruce=1, prob_mutacion=0.75
+
+    Mejor fitness: 0.71
+
+    Algoritmo Genetico: 0.22988505747126442
+    Matriz Confusion        Real
+              |   1    76.0  23.0
+    Estimado  |   0    37.0  125.0
+
+
+    Mejor fitness: 0.73
+
+    Algoritmo Genetico: 0.2183908045977011
+    Matriz Confusion        Real
+              |   1    76.0  20.0
+    Estimado  |   0    37.0  128.0
+
+----------------------------------------------------------------------------------

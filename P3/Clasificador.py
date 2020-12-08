@@ -2,6 +2,7 @@ from abc import ABCMeta,abstractmethod
 from EstrategiaParticionado import ValidacionCruzada,ValidacionSimple
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import math
 import collections
 import random
@@ -214,7 +215,11 @@ class Clasificador:
       # Creamos una tabla auxiliar con los datos de Test
       datos_tabla_test = dataset.extraeDatos(lista_particiones[0].indicesTest,x)  
       
-      mejor_individuo = self.entrenamiento(dataset, datos_tabla_train)
+      mejor_individuo, graf_media, graf_mejor = self.entrenamiento(dataset, datos_tabla_train)
+
+      # Ploteamos las graficas de fitness
+      self.plotear_graficas(graf_media, graf_mejor, filename)
+
       predicciones = self.clasifica(mejor_individuo, datos_tabla_test)
 
       # Llamamos a la funcion de calculo del error y las tasas
@@ -769,7 +774,6 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     atributos = self.valoresXAtributo[:-1]
 
     aciertos = 0            # Numero de veces que una regla del individuo acierta
-    veces_activada = 0      # Numero de veces que una regla de un individuo se activa
     
     # Para cada uno de los datos de train
     for dato in datos:
@@ -810,13 +814,6 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
           if dato[-1] == 1:
             aciertos = aciertos + 1 
       
-      # Si no se ha activado ninguna regla o se predice el mismo numero de clase 1 que de 0,
-      # se cuenta como un fallo. 
-
-    # Si no se ha activado ninguna regla nunca
-    #if veces_activada == 0:
-      #return 0
-    #else:
     return round(float(aciertos)/float(len(datos)),2) 
 
   def SeleccionProgenitores(self, datos):
@@ -839,12 +836,26 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     # Generamos la poblacion inicial
     self.inizializarPoblacion(datos)
 
+    grafica_media_fitness = []      # Lista donde guardaremos los fitness medios
+    grafica_mejor_fitness = []      # Lista donde guardaremos los mejores fitness
+
     for k in range(self.condicion_terminacion):
     
       # Calculamos el fitness de los individuos
       fitness_individuos = self.SeleccionProgenitores(datos_train_OneHot)
+      
+      # Guardamos el mejor fitness de la ronda
+      grafica_mejor_fitness.append(fitness_individuos[0][0])
 
-      print("Mejor fitness: " + str(fitness_individuos[0][0]))
+      # Calculamos el fitness medio
+      media = 0.0
+      for fit in fitness_individuos:
+        media = media + fit[0]
+
+      grafica_media_fitness.append(media/len(fitness_individuos))  
+
+
+      print("Mejor fitness: " + str(fitness_individuos[0][0])) ## ELIMINAR LINEA
 
       # Escogemos de forma elitista los mejores individuos
       num_mejores = math.ceil((self.elitismo/100)*self.tamanio_poblacion) # Estos no se mutaran ni cortaran
@@ -865,7 +876,17 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     # Devolvemos el individuo con mayor fitness    
     fitness_individuos = self.SeleccionProgenitores(datos_train_OneHot)
 
-    return self.poblacion[fitness_individuos[0][1]]
+    # Guardamos el mejor fitness de la ultima ronda
+    grafica_mejor_fitness.append(fitness_individuos[0][0])
+
+    # Calculamos el fitness medio
+    media = 0.0
+    for fit in fitness_individuos:
+      media = media + fit[0]
+
+    grafica_media_fitness.append(media/len(fitness_individuos))
+
+    return self.poblacion[fitness_individuos[0][1]], grafica_media_fitness, grafica_mejor_fitness
     
 
   def clasifica(self, individuo, datos_test_OneHot):
@@ -907,3 +928,34 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       predicciones.append(predice)
 
     return predicciones
+
+
+  def plotear_graficas(self, media, mejores, fileName):
+
+    n_epocas = len(media)
+
+    plt.figure()
+
+    # Limitamos las escalas
+    plt.xlim([1, n_epocas])
+    plt.ylim([0.0, 1.0])
+
+    # Generamos los indices de la grafica
+    index = []
+    for i in range(n_epocas):
+      index.append(i+1)
+
+    plt.plot(index, media, "b")
+    plt.plot(index, mejores, "r")
+
+    # Aniadimos las etiquetas de los ejes
+    plt.xlabel('Condicion de Terminacion')
+    plt.ylabel('Fitness')
+
+    # Nombre de la grafica
+    plt.title('Grafica Fitness de ' + fileName[15:])
+    
+    # Leyenda
+    plt.legend(["Media", "Mejores"], loc="lower right")
+    plt.show()
+
