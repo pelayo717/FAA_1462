@@ -49,14 +49,14 @@ class Verificador:
 
     def preprocesado_OneHot(self,filename):
         # Recuperamos CSV
-        X = pd.read_csv(filename)
+        X = pd.read_csv(filename, dtype=str)
 
         # Preprocesado de datos a etiquetas 
         le = LabelEncoder()
         X = X.apply(le.fit_transform)
 
         # Declaramos preprocesado One Hot
-        enc = OneHotEncoder(handle_unknown='ignore')
+        enc = OneHotEncoder()
 
         # Entrenamos encoder
         enc.fit(X)

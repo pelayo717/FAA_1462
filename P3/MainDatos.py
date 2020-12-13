@@ -21,7 +21,7 @@ if __name__ == "__main__":
     ag = ClasficadorAlgoritmoGenetico( 
                         tam_poblacion=100, cond_terminacion=150, max_reglas=35, 
                         tipo_cruce = 0, tipo_mutacion=0, prob_cruce=1, 
-                        prob_mutacion=0.75)
+                        prob_mutacion=0.5)
 
     medias = ag.validacion(validacion_simple, datos_titanic, filename="ConjuntosDatos/titanic.data")
 

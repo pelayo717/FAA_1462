@@ -217,6 +217,8 @@ class Clasificador:
       
       mejor_individuo, graf_media, graf_mejor = self.entrenamiento(dataset, datos_tabla_train)
 
+      print("Mejor individuo: " + str(mejor_individuo))
+
       # Ploteamos las graficas de fitness
       self.plotear_graficas(graf_media, graf_mejor, filename)
 

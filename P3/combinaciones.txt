@@ -30,3 +30,70 @@ Combinacion:
     Estimado  |   0    37.0  128.0
 
 ----------------------------------------------------------------------------------
+Combinacion:
+    tam_poblacion=100, cond_terminacion=150, max_reglas=35, tipo_cruce = 0, tipo_mutacion=0, 
+    prob_cruce=0.4, prob_mutacion=0.5
+
+    Mejor fitness: 0.7
+
+    Algoritmo Genetico: 0.209
+    Matriz Confusion        Real
+              |   1    83.0  24.0
+    Estimado  |   0    30.0  124.0
+
+
+    Mejor fitness: 0.7
+
+    Algoritmo Genetico: 0.2068
+    Matriz Confusion        Real
+              |   1    77.0  18.0
+    Estimado  |   0    36.0  130.0
+
+----------------------------------------------------------------------------------
+Combinacion:
+    tam_poblacion=100, cond_terminacion=150, max_reglas=35, tipo_cruce = 0, tipo_mutacion=0, 
+    prob_cruce=0.4, prob_mutacion=0.25
+
+    Mejor fitness: 0.71
+
+    Algoritmo Genetico: 0.2413
+    Matriz Confusion        Real
+              |   1    68.0  18.0
+    Estimado  |   0    45.0  130.0
+
+
+----------------------------------------------------------------------------------
+Combinacion:
+    tam_poblacion=100, cond_terminacion=150, max_reglas=35, tipo_cruce = 0, tipo_mutacion=0, 
+    prob_cruce=0.5, prob_mutacion=0.25
+
+    Mejor fitness: 0.74
+
+    Algoritmo Genetico: 0.22605
+    Matriz Confusion        Real
+              |   1    70.0  16.0
+    Estimado  |   0    43.0  132.0
+
+    Mejor fitness: 0.68
+
+    Algoritmo Genetico: 0.318
+    Matriz Confusion        Real
+              |   1    31.0  1.0
+    Estimado  |   0    82.0  147.0
+
+----------------------------------------------------------------------------------
+Combinacion:
+    tam_poblacion=100, cond_terminacion=150, max_reglas=35, tipo_cruce = 0, tipo_mutacion=0, 
+    prob_cruce=0.6, prob_mutacion=0.25    
+
+    Mejor fitness: 0.69
+
+    Algoritmo Genetico: 0.23754789272030652
+    Matriz Confusion        Real
+              |   1    69.0  18.0
+    Estimado  |   0    44.0  130.0
+
+    Algoritmo Genetico: 0.31800766283524906
+    Matriz Confusion        Real
+              |   1    36.0  6.0
+    Estimado  |   0    77.0  142.0
