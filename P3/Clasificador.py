@@ -802,7 +802,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
           # Guardamos su prediccion
           predice.append(regla[-1])
 
-      # Comprobamos qué clase predice mayoritariamente
+      # Comprobamos que clase predice mayoritariamente
       if predice:
         clase_0 = predice.count(0)
         clase_1 = predice.count(1)
@@ -828,7 +828,8 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
     # Ordenamos la lista de mayor a menor fitness
     resultados.sort(reverse=True)
-
+    print(resultados[0])
+    print(resultados[1])
     # Devolvemos una lista con el indice y el fitness de cada individuo
     return resultados
 
@@ -856,14 +857,65 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
       grafica_media_fitness.append(media/len(fitness_individuos))  
 
-
       print("Mejor fitness: " + str(fitness_individuos[0][0])) ## ELIMINAR LINEA
 
       # Escogemos de forma elitista los mejores individuos
-      num_mejores = math.ceil((self.elitismo/100)*self.tamanio_poblacion) # Estos no se mutaran ni cortaran
+      num_mejores = math.ceil((float(self.elitismo)/100)*float(self.tamanio_poblacion)) # Estos no se mutaran ni cortaran
       
+      valores_elitista = np.arange(0,num_mejores-1,1).tolist() # Aquellas posiciones elitistas
+      valores_normales = np.arange(num_mejores,len(fitness_individuos)-1,1).tolist() # Aquellas posiciones no elitistas
+
+      # Opcion 0
+      while((len(valores_elitista) + len(valores_normales))>=1):
+        individuos_seleccionados = []
+        flag=0
+        while(len(individuos_seleccionados) < 2):
+          numero = random.uniform(0,1)
+          if(numero <= 0.6): # Seleccionamos numero de elitistas
+            if(len(valores_elitista) > 0):
+              elitista_escogido = random.choice(valores_elitista)
+              individuos_seleccionados.append(elitista_escogido)
+              valores_elitista.remove(elitista_escogido)
+            elif(len(valores_normales) > 0):
+              normal_escogido = random.choice(valores_normales)
+              individuos_seleccionados.append(normal_escogido)
+              valores_normales.remove(normal_escogido)
+            else: # No quedan valores a escoger
+              flag=1
+              break
+
+          else: # Seleccionamos numero de no elitistas
+            if(len(valores_normales) > 0):
+              normal_escogido = random.choice(valores_normales)
+              individuos_seleccionados.append(normal_escogido)
+              valores_normales.remove(normal_escogido)
+            elif(len(valores_elitista) > 0):
+              elitista_escogido = random.choice(valores_elitista)
+              individuos_seleccionados.append(elitista_escogido)
+              valores_elitista.remove(elitista_escogido)
+            else: # No quedan valores a escoger
+              flag=1
+              break
+        if(flag==1): # No elementos para cruzar y mutar
+          break
+
+        individuo1 = self.poblacion[fitness_individuos[int(individuos_seleccionados[0])][1]]
+        individuo2 = self.poblacion[fitness_individuos[int(individuos_seleccionados[1])][1]]
+
+        # Cruzamos los individuos
+        self.cruce(individuo1, individuo2)
+
+        # Mutamos los individuos
+        self.mutacion(individuo1)
+        self.mutacion(individuo2)
+
+
+     
       # Para el resto de individuos
+      """
+      # Opcion 3
       for i in range(int(num_mejores), len(fitness_individuos)-1, 2):
+        
         individuo1 = self.poblacion[fitness_individuos[i][1]]
         individuo2 = self.poblacion[fitness_individuos[i+1][1]]
 
@@ -872,7 +924,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
         # Mutamos los individuos
         self.mutacion(individuo1)
-        self.mutacion(individuo2)
+        self.mutacion(individuo2)"""
     
 
     # Devolvemos el individuo con mayor fitness    

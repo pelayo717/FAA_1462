@@ -5,11 +5,15 @@ from Distancias import *
 from Verificador import *
 from MatrizConfusion import MatrizConfusion
 from tabulate import tabulate
+import sys
 
 if __name__ == "__main__":
 
     # Abrimos los ficheros y extraemos los datos
-    fileName = "ConjuntosDatos/titanic.data"
+    if(len(sys.argv) < 2):
+        print("Fallo en dataset a emplear")
+        exit()
+    fileName = sys.argv[1]
     datos_titanic = Datos(fileName)
 
 
@@ -19,11 +23,11 @@ if __name__ == "__main__":
     validacion_cruzada = ValidacionCruzada(6)
 
     ag = ClasficadorAlgoritmoGenetico( 
-                        tam_poblacion=100, cond_terminacion=150, max_reglas=35, 
-                        tipo_cruce = 0, tipo_mutacion=0, prob_cruce=1, 
+                        tam_poblacion=120, cond_terminacion=100, max_reglas=5, 
+                        tipo_cruce = 0, tipo_mutacion=0, prob_cruce=0.75, 
                         prob_mutacion=0.5)
 
-    medias = ag.validacion(validacion_simple, datos_titanic, filename="ConjuntosDatos/titanic.data")
+    medias = ag.validacion(validacion_simple, datos_titanic, filename=fileName)
 
 
     mx1 = MatrizConfusion()

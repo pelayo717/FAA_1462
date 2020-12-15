@@ -52,8 +52,8 @@ class Verificador:
         X = pd.read_csv(filename, dtype=str)
 
         # Preprocesado de datos a etiquetas 
-        le = LabelEncoder()
-        X = X.apply(le.fit_transform)
+        """le = LabelEncoder()
+        X = X.apply(le.fit_transform)"""
 
         # Declaramos preprocesado One Hot
         enc = OneHotEncoder()
