@@ -23,9 +23,9 @@ if __name__ == "__main__":
     validacion_cruzada = ValidacionCruzada(6)
 
     ag = ClasficadorAlgoritmoGenetico( 
-                        tam_poblacion=120, cond_terminacion=100, max_reglas=5, 
-                        tipo_cruce = 0, tipo_mutacion=0, prob_cruce=0.75, 
-                        prob_mutacion=0.5)
+                        tam_poblacion=150, cond_terminacion=200, max_reglas=10, 
+                        tipo_cruce = 0, tipo_mutacion=0, prob_cruce=0.25, 
+                        prob_mutacion=0.3)
 
     medias = ag.validacion(validacion_simple, datos_titanic, filename=fileName)
 

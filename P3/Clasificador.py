@@ -814,7 +814,8 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
         # Si se predice clase 1
         elif clase_0 < clase_1:
           if dato[-1] == 1:
-            aciertos = aciertos + 1 
+            aciertos = aciertos + 1
+        
       
     return round(float(aciertos)/float(len(datos)),2) 
 
@@ -862,11 +863,58 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       # Escogemos de forma elitista los mejores individuos
       num_mejores = math.ceil((float(self.elitismo)/100)*float(self.tamanio_poblacion)) # Estos no se mutaran ni cortaran
       
-      valores_elitista = np.arange(0,num_mejores-1,1).tolist() # Aquellas posiciones elitistas
-      valores_normales = np.arange(num_mejores,len(fitness_individuos)-1,1).tolist() # Aquellas posiciones no elitistas
+      valores_elitista = np.arange(0,num_mejores,1).tolist() # Aquellas posiciones elitistas
+      valores_normales = np.arange(num_mejores,len(fitness_individuos),1).tolist() # Aquellas posiciones no elitistas
 
       # Opcion 0
-      while((len(valores_elitista) + len(valores_normales))>=1):
+
+      # Seleccionar 2
+      while(len(fitness_individuos)>1): # Por si acaso son impares
+        #print(len(fitness_individuos))
+        individuos_seleccionados = []
+        i=0
+        while(len(individuos_seleccionados) < 2):
+          max = sum(fitness_aux[0] for fitness_aux in fitness_individuos)
+          pick = random.uniform(0, max)
+          current=0
+          flag=0
+          i+=1
+          for fitness_aux in fitness_individuos:
+            current += fitness_aux[0]
+            if(current > pick):
+              individuos_seleccionados.append(fitness_aux[1])
+              flag=1
+              break
+          if(flag==1): # Encontrado aquel que cumple la condicion
+            fitness_individuos.remove(fitness_aux)
+
+          # En el caso de no dar con ninguno que satisfaga la condicion previa, escogemos los que sean
+          # Para ello estaremos en la segunda vuelta
+          if(i==2 and len(individuos_seleccionados) < 2): # Segunda vuelta y ninguno cumple la condicion, el primero
+            if(len(individuos_seleccionados) == 1):
+              individuos_seleccionados.append(fitness_individuos[0][1])
+              fitness_individuos.remove(fitness_individuos[0])
+            elif(len(individuos_seleccionados) == 0):
+              individuos_seleccionados.append(fitness_individuos[0][1])
+              fitness_individuos.remove(fitness_individuos[0])
+              individuos_seleccionados.append(fitness_individuos[0][1])
+              fitness_individuos.remove(fitness_individuos[0])
+          
+
+        individuo1 = self.poblacion[individuos_seleccionados[0]]
+        individuo2 = self.poblacion[individuos_seleccionados[1]]
+
+        self.cruce(individuo1, individuo2)
+
+        self.mutacion(individuo1)
+        self.mutacion(individuo2)
+
+
+            
+      # Sacar numero de probabilidad
+      # Realizar cruces y mutaciones
+
+      """while((len(valores_elitista) + len(valores_normales))>=1):
         individuos_seleccionados = []
         flag=0
         while(len(individuos_seleccionados) < 2):
@@ -907,7 +955,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
         # Mutamos los individuos
         self.mutacion(individuo1)
-        self.mutacion(individuo2)
+        self.mutacion(individuo2)"""
 
 
      
