@@ -14,33 +14,30 @@ if __name__ == "__main__":
         print("Fallo en dataset a emplear")
         exit()
     fileName = sys.argv[1]
-    datos_titanic = Datos(fileName)
-
+    fileName2="ConjuntosDatos/tic-tac-toe.data"
+    datos_tictactoe = Datos(fileName2)
 
     # Creamos las validaciones
     validacion_simple = ValidacionSimple(75,10)
-
     validacion_cruzada = ValidacionCruzada(6)
 
-    ag = ClasficadorAlgoritmoGenetico( 
+    ag_tictactoe = ClasficadorAlgoritmoGenetico( 
                         tam_poblacion=150, cond_terminacion=150, max_reglas=10, 
-                        tipo_cruce = 0, tipo_mutacion=0, prob_cruce=0.5, 
+                        tipo_cruce = 1, tipo_mutacion=1, prob_cruce=0.5, 
                         prob_mutacion=0.5)
 
-    medias = ag.validacion(validacion_simple, datos_titanic, filename=fileName)
+    medias_tictactoe = ag_tictactoe.validacion(validacion_simple, datos_tictactoe, filename=fileName2)
+    mx1_tictactoe = MatrizConfusion()
 
-
-    mx1 = MatrizConfusion()
-
-    print("\nAlgoritmo Genetico: " + str(medias[0]))
-    tpr, fpr = mx1.matrix_media(medias[1], 
-        medias[1], 
-        medias[2], 
-        medias[2],
-        medias[3], 
-        medias[3],
-        medias[4], 
-        medias[4])
+    print("\nAlgoritmo Genetico: " + str(medias_tictactoe[0]))
+    ag_tpr_tictactoe, ag_fpr_tictactoe = mx1_tictactoe.matrix_media(medias_tictactoe[1], 
+                                medias_tictactoe[1], 
+                                medias_tictactoe[2], 
+                                medias_tictactoe[2], 
+                                medias_tictactoe[3], 
+                                medias_tictactoe[3], 
+                                medias_tictactoe[4], 
+                                medias_tictactoe[4])
 
         # Abrimos un fichero de resultados para albergar y automatizar el proceso
     """fp = open("resultados_poblacion.txt","wb")
