@@ -620,7 +620,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       # Para cada una de esas reglas
       for j in range(num_reglas):
         regla = np.zeros(self.longuitud_regla,dtype=int)
-        
+
         # Para cada uno de los bits de cada regla
         for k in range(self.longuitud_regla):
           # Generamos un numero aleatorio entre 0 y 1
@@ -651,7 +651,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       
       # Sacamos el numero de reglas del progenitor 1 y escogemos aleatoriamente una 
       # regla para el progenitor 1
-      num_reglas_p1 = len(progenitor1)
+     num_reglas_p1 = len(progenitor1)
       rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
 
       # Sacamos el numero de reglas del progenitor 2 y escogemos aleatoriamente una 
@@ -663,7 +663,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       pto_cruce = random.randint(0,self.longuitud_regla-1)
 
         
-      copia_progenitor1 = np.copy(progenitor1[rand_reglas_p1][pto_cruce:])
+      copia_progenitor1 = progenitor1[rand_reglas_p1][pto_cruce:].copy()
         
       # Procedemos a cruzar en el progenitor1 en la regla concreta, la parte del progenitor 2 
       # correspondiente y viceversa
@@ -689,7 +689,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       num_reglas_p2 = len(progenitor2)
       rand_reglas_p2 = random.randint(0,num_reglas_p2-1)
 
-      copia_progenitor1 = np.copy(progenitor1[rand_reglas_p1])
+      copia_progenitor1 = progenitor1[rand_reglas_p1].copy()
 
       # Cambiamos en el progenitor 1, la regla del progenitor 2
       progenitor1[rand_reglas_p1] = progenitor2[rand_reglas_p2]
@@ -707,7 +707,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     num_reglas_p1 = len(progenitor)
     rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
 
-    # Recorremos la regla cambiando aquellos bits que consideremos
+# Recorremos la regla cambiando aquellos bits que consideremos
     for i in range(len(progenitor[rand_reglas_p1])):
 
       # Comprobamos la probabilidad de mutacion por cada bit
@@ -750,7 +750,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
           # Mutamos un bit aleatorio para que la regla sea valida
           pto_aleatorio= random.randint(0,self.longuitud_regla-1)
-          regla[pto_aleatorio] = regla[pto_aleatorio] ^ 1  
+          regla[pto_aleatorio] = regla[pto_aleatorio] ^ 1   
 
         # Aniadimos la regla nueva al progenitor
         progenitor.append(regla)  
@@ -816,8 +816,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
           if dato[-1] == 1:
             aciertos = aciertos + 1
         
-      
-    return round(float(aciertos)/float(len(datos)),2) 
+    return float(aciertos)/float(len(datos))
 
   def SeleccionProgenitores(self, datos):
     resultados = []
@@ -844,7 +843,8 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     grafica_mejor_fitness = []      # Lista donde guardaremos los mejores fitness
 
     for k in range(self.condicion_terminacion):
-    
+      print("Etapa " + str(k) + ": ")
+         
       # Calculamos el fitness de los individuos
       fitness_individuos = self.SeleccionProgenitores(datos_train_OneHot)
       
@@ -859,6 +859,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       grafica_media_fitness.append(media/len(fitness_individuos))  
 
       print("Mejor fitness: " + str(fitness_individuos[0][0])) ## ELIMINAR LINEA
+      print("Media fitness: " + str(media/len(fitness_individuos))) ## ELIMINAR LINEA
 
       # Escogemos de forma elitista los mejores individuos
       num_mejores = math.ceil((float(self.elitismo)/100)*float(self.tamanio_poblacion)) # Estos no se mutaran ni cortaran
@@ -867,10 +868,9 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       valores_normales = np.arange(num_mejores,len(fitness_individuos),1).tolist() # Aquellas posiciones no elitistas
 
       # Opcion 0
-
       # Seleccionar 2
       while(len(fitness_individuos)>1): # Por si acaso son impares
-        #print(len(fitness_individuos))
+
         individuos_seleccionados = []
         i=0
         while(len(individuos_seleccionados) < 2):
@@ -909,72 +909,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
         self.mutacion(individuo1)
         self.mutacion(individuo2)
 
-
-            
-      # Sacar numero de probabilidad
-      # Realizar cruces y mutaciones
-
-      """while((len(valores_elitista) + len(valores_normales))>=1):
-        individuos_seleccionados = []
-        flag=0
-        while(len(individuos_seleccionados) < 2):
-          numero = random.uniform(0,1)
-          if(numero <= 0.6): # Seleccionamos numero de elitistas
-            if(len(valores_elitista) > 0):
-              elitista_escogido = random.choice(valores_elitista)
-              individuos_seleccionados.append(elitista_escogido)
-              valores_elitista.remove(elitista_escogido)
-            elif(len(valores_normales) > 0):
-              normal_escogido = random.choice(valores_normales)
-              individuos_seleccionados.append(normal_escogido)
-              valores_normales.remove(normal_escogido)
-            else: # No quedan valores a escoger
-              flag=1
-              break
-
-          else: # Seleccionamos numero de no elitistas
-            if(len(valores_normales) > 0):
-              normal_escogido = random.choice(valores_normales)
-              individuos_seleccionados.append(normal_escogido)
-              valores_normales.remove(normal_escogido)
-            elif(len(valores_elitista) > 0):
-              elitista_escogido = random.choice(valores_elitista)
-              individuos_seleccionados.append(elitista_escogido)
-              valores_elitista.remove(elitista_escogido)
-            else: # No quedan valores a escoger
-              flag=1
-              break
-        if(flag==1): # No elementos para cruzar y mutar
-          break
-
-        individuo1 = self.poblacion[fitness_individuos[int(individuos_seleccionados[0])][1]]
-        individuo2 = self.poblacion[fitness_individuos[int(individuos_seleccionados[1])][1]]
-
-        # Cruzamos los individuos
-        self.cruce(individuo1, individuo2)
-
-        # Mutamos los individuos
-        self.mutacion(individuo1)
-        self.mutacion(individuo2)"""
-
-
-     
-      # Para el resto de individuos
-      """
-      # Opcion 3
-      for i in range(int(num_mejores), len(fitness_individuos)-1, 2):
-        
-        individuo1 = self.poblacion[fitness_individuos[i][1]]
-        individuo2 = self.poblacion[fitness_individuos[i+1][1]]
-
-        # Cruzamos los individuos
-        self.cruce(individuo1, individuo2)
-
-        # Mutamos los individuos
-        self.mutacion(individuo1)
-        self.mutacion(individuo2)"""
-    
-
+      
     # Devolvemos el individuo con mayor fitness    
     fitness_individuos = self.SeleccionProgenitores(datos_train_OneHot)
 
