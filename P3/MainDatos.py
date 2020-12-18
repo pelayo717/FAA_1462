@@ -42,7 +42,7 @@ if __name__ == "__main__":
         medias[4], 
         medias[4])
 
-    # Abrimos un fichero de resultados para albergar y automatizar el proceso
+        # Abrimos un fichero de resultados para albergar y automatizar el proceso
     """fp = open("resultados_poblacion.txt","wb")
     fp.write("Pobla|Term|Max|Cruce|Mutacion|ProbCruce|ProbMutaci|AlgGenetico")
 

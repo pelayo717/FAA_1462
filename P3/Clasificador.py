@@ -651,7 +651,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
       
       # Sacamos el numero de reglas del progenitor 1 y escogemos aleatoriamente una 
       # regla para el progenitor 1
-     num_reglas_p1 = len(progenitor1)
+      num_reglas_p1 = len(progenitor1)
       rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
 
       # Sacamos el numero de reglas del progenitor 2 y escogemos aleatoriamente una 
