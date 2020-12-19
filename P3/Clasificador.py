@@ -650,8 +650,8 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     if(probabilidad <= self.prob_cruce):
       
       # Sacamos el numero de reglas del progenitor 1 y escogemos aleatoriamente una 
-      # regla para el progenitor 1
-     num_reglas_p1 = len(progenitor1)
+      # regla para el progenitor 1  
+      num_reglas_p1 = len(progenitor1)
       rand_reglas_p1 = random.randint(0,num_reglas_p1-1)
 
       # Sacamos el numero de reglas del progenitor 2 y escogemos aleatoriamente una 
@@ -788,8 +788,8 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
         activa = 1
         # Para cada uno de los atributos de la regla
         for atr in atributos:
-          
           index_max = index_min + atr
+
           # Si no se activa ese atributo, salimos del bucle (No se activa la regla)
           if(not any(np.logical_and(regla[index_min:index_max], dato[index_min:index_max]))):
             activa = 0
@@ -828,8 +828,6 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
 
     # Ordenamos la lista de mayor a menor fitness
     resultados.sort(reverse=True)
-    print(resultados[0])
-    print(resultados[1])
     # Devolvemos una lista con el indice y el fitness de cada individuo
     return resultados
 
@@ -842,9 +840,7 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
     grafica_media_fitness = []      # Lista donde guardaremos los fitness medios
     grafica_mejor_fitness = []      # Lista donde guardaremos los mejores fitness
 
-    for k in range(self.condicion_terminacion):
-      print("Etapa " + str(k) + ": ")
-         
+    for k in range(self.condicion_terminacion):         
       # Calculamos el fitness de los individuos
       fitness_individuos = self.SeleccionProgenitores(datos_train_OneHot)
       
@@ -857,9 +853,6 @@ class ClasficadorAlgoritmoGenetico(Clasificador):
         media = media + fit[0]
 
       grafica_media_fitness.append(media/len(fitness_individuos))  
-
-      print("Mejor fitness: " + str(fitness_individuos[0][0])) ## ELIMINAR LINEA
-      print("Media fitness: " + str(media/len(fitness_individuos))) ## ELIMINAR LINEA
 
       # Escogemos de forma elitista los mejores individuos
       num_mejores = math.ceil((float(self.elitismo)/100)*float(self.tamanio_poblacion)) # Estos no se mutaran ni cortaran
